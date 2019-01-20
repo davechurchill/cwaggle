@@ -5,14 +5,14 @@
 class CircleBody
 {
 public:
-    Vec2    p       = { 0, 0 };
-    Vec2    v       = { 0, 0 };
-    Vec2    a       = { 0, 0 };
-    double  m       = 0;
-    double  r       = 0;
-    size_t  id      = 0;
-    bool    moved   = false;
-    bool    collided = false;
+    Vec2    p       = { 0, 0 }; // position
+    Vec2    v       = { 0, 0 }; // velocity
+    Vec2    a       = { 0, 0 }; // acceleration
+    double  m       = 0;        // mass
+    double  r       = 0;        // radius
+    size_t  id      = 0;        // id
+    bool    moved   = false;    // moved last update
+    bool    collided = false;   // collided last update
     
     CircleBody() {}
 
