@@ -27,15 +27,17 @@ class Simulator
     double m_stoppingSpeed      = 0.01; // stop an object if moving less than this speed
 
     // time keeping
-    double m_computeTime = 0;    // the CPU time of the last frame of collisions
-    double m_computeTimeMax = 0;    // the max CPU time of collisions since init
+    double m_computeTime        = 0;    // the CPU time of the last frame of collisions
+    double m_computeTimeMax     = 0;    // the max CPU time of collisions since init
 
     // stores all rigid circle bodies and collision data
-    std::vector<CircleBody> m_circles;
-    std::vector<CollisionData> m_collisions;
+    std::vector<CircleBody>     m_circles;
+    std::vector<CollisionData>  m_collisions;
     
-    std::vector<Robot>      m_robots;
-    std::vector<Puck>       m_pucks;
+    // pucks and robots will eventually do things
+    // they store pointers to their respective CircleBody stored in m_circles
+    std::vector<Robot>          m_robots;
+    std::vector<Puck>           m_pucks;
 
     void movement()
     {
