@@ -37,7 +37,7 @@ class Simulator
     std::vector<Robot>      m_robots;
     std::vector<Puck>       m_pucks;
 
-    void Simulator::movement()
+    void movement()
     {
         // apply acceleration, velocity to all circles
         for (auto & circle : m_circles)
@@ -50,7 +50,7 @@ class Simulator
         }
     }
 
-    void Simulator::collisions()
+    void collisions()
     {
         Timer t;
         t.start();
@@ -134,7 +134,7 @@ class Simulator
 
 public:
 
-    Simulator::Simulator(double width, double height)
+    Simulator(double width, double height)
         : m_width(width)
         , m_height(height)
     {
@@ -144,7 +144,7 @@ public:
         init(2);
     }
 
-    void Simulator::init(size_t skip)
+    void init(size_t skip)
     {
         m_circles.clear();
         m_robots.clear();
@@ -164,62 +164,62 @@ public:
         m_computeTimeMax = 0;
     }
 
-    void Simulator::addRobot(const Vec2 & pos, double radius)
+    void addRobot(const Vec2 & pos, double radius)
     {
         assert(m_robots.empty() || m_robots.size() < m_robots.capacity());
         m_circles.emplace_back(CircleBody(pos, radius, m_circles.size()));
         m_robots.emplace_back(Robot(&m_circles.back(), m_robots.size()));
     }
 
-    void Simulator::addPuck(const Vec2 & pos, double radius)
+    void addPuck(const Vec2 & pos, double radius)
     {
         assert(m_pucks.empty() || m_pucks.size() < m_pucks.capacity());
         m_circles.emplace_back(CircleBody(pos, radius, m_circles.size()));
         m_pucks.emplace_back(Puck(&m_circles.back(), m_pucks.size()));
     }
 
-    void Simulator::update()
+    void update()
     {
         movement();
         collisions();
     }
 
-    std::vector<CircleBody> & Simulator::getCircles()
+    std::vector<CircleBody> & getCircles()
     {
         return m_circles;
     }
 
-    std::vector<CollisionData> & Simulator::getCollisions()
+    std::vector<CollisionData> & getCollisions()
     {
         return m_collisions;
     }
 
-    double Simulator::getComputeTime() const
+    double getComputeTime() const
     {
         return m_computeTime;
     }
 
-    double Simulator::getComputeTimeMax() const
+    double getComputeTimeMax() const
     {
         return m_computeTimeMax;
     }
 
-    std::vector<Robot> & Simulator::getRobots()
+    std::vector<Robot> & getRobots()
     {
         return m_robots;
     }
 
-    std::vector<Puck> & Simulator::getPucks()
+    std::vector<Puck> & getPucks()
     {
         return m_pucks;
     }
 
-    double Simulator::width() const
+    double width() const
     {
         return m_width;
     }
 
-    double Simulator::height() const
+    double height() const
     {
         return m_height;
     }

@@ -22,7 +22,7 @@ class GUI
     std::vector<sf::CircleShape> m_circleShapes;
     std::vector<sf::Color> m_colors;
 
-    void GUI::init()
+    void init()
     {
         m_circleShapes.clear();
         m_font.loadFromFile("fonts/cour.ttf");
@@ -52,7 +52,7 @@ class GUI
         m_circleShapes[0] = shape;
     }
 
-    void GUI::sUserInput()
+    void sUserInput()
     {
         sf::Event event;
         while (m_window.pollEvent(event))
@@ -144,7 +144,7 @@ class GUI
         }
     }
 
-    void GUI::sRender()
+    void sRender()
     {
         m_window.clear();
 
@@ -215,7 +215,7 @@ class GUI
     
 public:
 
-    GUI::GUI(Simulator & sim, size_t fps)
+    GUI(Simulator & sim, size_t fps)
         : m_sim(sim)
     {
         m_window.create(sf::VideoMode((size_t)m_sim.width(), (size_t)m_sim.height()), "CWaggle");
@@ -223,7 +223,7 @@ public:
         init();
     }
 
-    void GUI::update()
+    void update()
     {
         sUserInput();
         sRender();
