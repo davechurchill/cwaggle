@@ -15,7 +15,7 @@ int main()
     // ideally the frame rate limit should be set to your monitor refresh rate
     // this is completely optional, simulation will run with no visualization
     // GUI can be created at any time to start visualizing an ongoing simulation
-    GUI gui(sim, 144);
+    GUI gui(sim, 60);
 
     // run the simulation update() function in a loop
     while (true)

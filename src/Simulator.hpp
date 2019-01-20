@@ -15,8 +15,6 @@ struct CollisionData
     CircleBody * c2 = nullptr;
 };
 
-class GUI;
-
 class Simulator
 {
     // world properties
