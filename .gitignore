@@ -1,3 +1,20 @@
+# visual studio files
+.vscode/
+visualstudio/.vs/
+visualstudio/Debug
+visualstudio/Release
+
+# binary output
+bin/*.exe
+bin/*.ilk
+bin/*.pdb
+bin/*.lib
+bin/*.bsc
+bin/*obj
+bin/*map
+bin/*pdb
+bin/*.dll
+
 # Prerequisites
 *.d
 
