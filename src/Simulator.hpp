@@ -8,6 +8,7 @@
 #include "Robot.hpp"
 #include "Puck.hpp"
 #include "Timer.hpp"
+#include "World.hpp"
 
 struct CollisionData
 {
@@ -17,9 +18,7 @@ struct CollisionData
 
 class Simulator
 {
-    // world properties
-    double m_width              = 1920; // width  of the world 
-    double m_height             = 1080; // height of the world 
+    World & m_world;
 
     // physics configuration
     double m_overlapThreshold   = 0.1;  // allow overlap of this amount without resolution
@@ -30,19 +29,12 @@ class Simulator
     double m_computeTime        = 0;    // the CPU time of the last frame of collisions
     double m_computeTimeMax     = 0;    // the max CPU time of collisions since init
 
-    // stores all rigid circle bodies and collision data
-    std::vector<CircleBody>     m_circles;
     std::vector<CollisionData>  m_collisions;
-    
-    // pucks and robots will eventually do things
-    // they store pointers to their respective CircleBody stored in m_circles
-    std::vector<Robot>          m_robots;
-    std::vector<Puck>           m_pucks;
 
     void movement()
     {
         // apply acceleration, velocity to all circles
-        for (auto & circle : m_circles)
+        for (auto & circle : m_world.getCircles())
         {
             if (circle.v.length() < m_stoppingSpeed) { circle.v = Vec2(0, 0); }
             circle.a = circle.v * -m_deceleration;
@@ -61,20 +53,20 @@ class Simulator
         // we can skip collision checking for any circle that hasn't moved
         // static resolution doesn't alter speed, so movement not recorded
         // so if a circle collided last frame, consider it to have moved
-        for (auto & c1 : m_circles)
+        for (auto & c1 : m_world.getCircles())
         {
             if (c1.collided) { c1.moved = true; }
             c1.collided = false;
         }
 
         // detect collisions for all circles with other circles
-        for (auto & c1 : m_circles)
+        for (auto & c1 : m_world.getCircles())
         {
             // if this circle hasn't moved, we don't need to check collisions for it
             if (!c1.moved) { continue; }
 
             // check against each other circle
-            for (auto & c2 : m_circles)
+            for (auto & c2 : m_world.getCircles())
             {
                 if (c1.p.distSq(c2.p) > (c1.r + c2.r)*(c1.r + c2.r)) { continue; }
                 if (c1.id == c2.id) { continue; }
@@ -103,8 +95,8 @@ class Simulator
             // check for collisions with the bounds of the world
             if (c1.p.x - c1.r < 0) { c1.p.x = c1.r;            c1.collided = true; }
             if (c1.p.y - c1.r < 0) { c1.p.y = c1.r;            c1.collided = true; }
-            if (c1.p.x + c1.r > m_width) { c1.p.x = m_width - c1.r;  c1.collided = true; }
-            if (c1.p.y + c1.r > m_height) { c1.p.y = m_height - c1.r; c1.collided = true; }
+            if (c1.p.x + c1.r > m_world.width()) { c1.p.x = m_world.width() - c1.r;  c1.collided = true; }
+            if (c1.p.y + c1.r > m_world.height()) { c1.p.y = m_world.height() - c1.r; c1.collided = true; }
         }
 
         // calculate and apply dynamic collision resolution
@@ -136,54 +128,10 @@ class Simulator
 
 public:
 
-    Simulator(double width, double height)
-        : m_width(width)
-        , m_height(height)
+    Simulator(World & world)
+        : m_world(world)
     {
-        m_robots.reserve(20000);
-        m_pucks.reserve(20000);
-        m_circles.reserve(20000);
-        init(2);
-    }
-
-    void init(size_t skip)
-    {
-        m_circles.clear();
-        m_robots.clear();
-        m_pucks.clear();
-        m_collisions.clear();
-
-        addRobot(Vec2(200, 360), 50);
-
-        for (size_t i = 0; i < 140; i += skip)
-        {
-            for (size_t j = 0; j < 90; j += skip)
-            {
-                addPuck(Vec2(400.0f + (double)i * 10, 100.0f + (double)j * 10), skip*4.0f);
-            }
-        }
-
-        m_computeTimeMax = 0;
-    }
-
-    void addRobot(const Vec2 & pos, double radius)
-    {
-        // robots store pointers to their CircleBody object which live in m_circles
-        // it's possible that these pointers become invalid once m_circles has to resize
-        // so for now we'll just check to see if that's going to happen and assert
-        assert(m_robots.empty() || m_robots.size() < m_robots.capacity());
-        m_circles.emplace_back(CircleBody(pos, radius, m_circles.size()));
-        m_robots.emplace_back(Robot(&m_circles.back(), m_robots.size()));
-    }
-
-    void addPuck(const Vec2 & pos, double radius)
-    {
-        // pucks store pointers to their CircleBody object which live in m_circles
-        // it's possible that these pointers become invalid once m_circles has to resize
-        // so for now we'll just check to see if that's going to happen and assert
-        assert(m_pucks.empty() || m_pucks.size() < m_pucks.capacity());
-        m_circles.emplace_back(CircleBody(pos, radius, m_circles.size()));
-        m_pucks.emplace_back(Puck(&m_circles.back(), m_pucks.size()));
+        
     }
 
     void update()
@@ -192,9 +140,9 @@ public:
         collisions();
     }
 
-    std::vector<CircleBody> & getCircles()
+    void setWorld(World & world)
     {
-        return m_circles;
+        m_world = world;
     }
 
     std::vector<CollisionData> & getCollisions()
@@ -212,23 +160,8 @@ public:
         return m_computeTimeMax;
     }
 
-    std::vector<Robot> & getRobots()
+    World & getWorld()
     {
-        return m_robots;
-    }
-
-    std::vector<Puck> & getPucks()
-    {
-        return m_pucks;
-    }
-
-    double width() const
-    {
-        return m_width;
-    }
-
-    double height() const
-    {
-        return m_height;
+        return m_world;
     }
 };

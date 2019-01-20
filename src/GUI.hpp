@@ -5,6 +5,7 @@
 
 #include "Vec2.hpp"
 #include "Simulator.hpp"
+#include "ExampleWorlds.hpp"
 
 class GUI
 {
@@ -22,8 +23,9 @@ class GUI
     std::vector<sf::CircleShape> m_circleShapes;
     std::vector<sf::Color> m_colors;
 
-    void init()
+    void init(World & world)
     {
+        m_sim.setWorld(world);
         m_circleShapes.clear();
         m_font.loadFromFile("fonts/cour.ttf");
         m_text.setFont(m_font);
@@ -31,7 +33,7 @@ class GUI
         m_text.setPosition(5, 5);
         m_text.setFillColor(sf::Color::Yellow);
 
-        for (auto & circle : m_sim.getCircles())
+        for (auto & circle : m_sim.getWorld().getCircles())
         {
             sf::CircleShape shape((float)circle.r, 32);
             shape.setOrigin((float)circle.r, (float)circle.r);
@@ -42,7 +44,7 @@ class GUI
         }
 
         // set the color of the big circle
-        auto & circle = m_sim.getCircles().front();
+        auto & circle = m_sim.getWorld().getCircles().front();
         sf::CircleShape shape((float)circle.r, 32);
         shape.setOrigin((float)circle.r, (float)circle.r);
         shape.setPosition((float)circle.p.x, (float)circle.p.y);
@@ -69,15 +71,15 @@ class GUI
                 switch (event.key.code)
                 {
                 case sf::Keyboard::Escape: exit(0); break;
-                case sf::Keyboard::Num1:   m_sim.init(1); init(); break;
-                case sf::Keyboard::Num2:   m_sim.init(2); init(); break;
-                case sf::Keyboard::Num3:   m_sim.init(3); init(); break;
-                case sf::Keyboard::Num4:   m_sim.init(4); init(); break;
-                case sf::Keyboard::Num5:   m_sim.init(5); init(); break;
-                case sf::Keyboard::Num6:   m_sim.init(6); init(); break;
-                case sf::Keyboard::Num7:   m_sim.init(7); init(); break;
-                case sf::Keyboard::Num8:   m_sim.init(8); init(); break;
-                case sf::Keyboard::Num9:   m_sim.init(9); init(); break;
+                case sf::Keyboard::Num1:   init(ExampleWorlds::GetGridWorld(1)); break;
+                case sf::Keyboard::Num2:   init(ExampleWorlds::GetGridWorld(2)); break;
+                case sf::Keyboard::Num3:   init(ExampleWorlds::GetGridWorld(3)); break;
+                case sf::Keyboard::Num4:   init(ExampleWorlds::GetGridWorld(4)); break;
+                case sf::Keyboard::Num5:   init(ExampleWorlds::GetGridWorld(5)); break;
+                case sf::Keyboard::Num6:   init(ExampleWorlds::GetGridWorld(6)); break;
+                case sf::Keyboard::Num7:   init(ExampleWorlds::GetGridWorld(7)); break;
+                case sf::Keyboard::Num8:   init(ExampleWorlds::GetGridWorld(8)); break;
+                case sf::Keyboard::Num9:   init(ExampleWorlds::GetGridWorld(9)); break;
                 case sf::Keyboard::D:      m_debug = !m_debug; break;
                 }
             }
@@ -86,7 +88,7 @@ class GUI
             {
                 if (event.mouseButton.button == sf::Mouse::Left)
                 {
-                    for (auto & circle : m_sim.getCircles())
+                    for (auto & circle : m_sim.getWorld().getCircles())
                     {
                         Vec2 mPos((double)event.mouseButton.x, (double)event.mouseButton.y);
                         if (mPos.dist(circle.p) < circle.r)
@@ -99,7 +101,7 @@ class GUI
 
                 if (event.mouseButton.button == sf::Mouse::Right)
                 {
-                    for (auto & circle : m_sim.getCircles())
+                    for (auto & circle : m_sim.getWorld().getCircles())
                     {
                         Vec2 mPos((double)event.mouseButton.x, (double)event.mouseButton.y);
                         if (mPos.dist(circle.p) < circle.r)
@@ -148,7 +150,7 @@ class GUI
     {
         m_window.clear();
 
-        for (auto & circle : m_sim.getCircles())
+        for (auto & circle : m_sim.getWorld().getCircles())
         {
             m_circleShapes[circle.id].setPosition((float)circle.p.x, (float)circle.p.y);
             m_window.draw(m_circleShapes[circle.id]);
@@ -202,7 +204,7 @@ class GUI
 
         // draw score
         std::stringstream ss;
-        ss << "Num Objs: " << m_sim.getCircles().size() << "\n";
+        ss << "Num Objs: " << m_sim.getWorld().getCircles().size() << "\n";
         ss << "CPU Time: " << m_sim.getComputeTime() << "ms\n";
         ss << "Max Time: " << m_sim.getComputeTimeMax() << "ms\n";
         ss << "Debug:    " << (m_debug ? "on" : "off");
@@ -218,9 +220,9 @@ public:
     GUI(Simulator & sim, size_t fps)
         : m_sim(sim)
     {
-        m_window.create(sf::VideoMode((size_t)m_sim.width(), (size_t)m_sim.height()), "CWaggle");
+        m_window.create(sf::VideoMode((size_t)m_sim.getWorld().width(), (size_t)m_sim.getWorld().height()), "CWaggle");
         m_window.setFramerateLimit(fps);
-        init();
+        init(sim.getWorld());
     }
 
     void update()

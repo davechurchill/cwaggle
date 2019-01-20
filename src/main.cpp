@@ -3,21 +3,25 @@
 #include "GUI.hpp"
 
 // allows us to use the WorldState / simulation
+#include "World.hpp"
 #include "Simulator.hpp"
 
 int main()
 {
-    // set up a new simulator with a given width and height
-    // for now it has an init() function which adds some objects
-    Simulator sim(1920, 1080);
+    // set up a new world that will be used for our simulation
+    // let's pull one from the ExampleWorlds
+    World world = ExampleWorlds::GetGridWorld(2);
 
-    // set up a GUI to visualize the simulation with a world and frame rate limit
-    // ideally the frame rate limit should be set to your monitor refresh rate
+    // create a new simulator with the given world
+    Simulator sim(world);
+
+    // set up a GUI to visualize the simulation with a given frame rate limit
+    // the frame rate limit should be set at least as high as your monitor refresh rate
     // this is completely optional, simulation will run with no visualization
-    // GUI can be created at any time to start visualizing an ongoing simulation
+    // GUI can also be created at any time to start visualizing an ongoing simulation
     GUI gui(sim, 60);
 
-    // run the simulation update() function in a loop
+    // run the simulation and gui update() function in a loop
     while (true)
     {
         // call the world physics simulation update
