@@ -168,6 +168,9 @@ public:
 
     void addRobot(const Vec2 & pos, double radius)
     {
+        // robots store pointers to their CircleBody object which live in m_circles
+        // it's possible that these pointers become invalid once m_circles has to resize
+        // so for now we'll just check to see if that's going to happen and assert
         assert(m_robots.empty() || m_robots.size() < m_robots.capacity());
         m_circles.emplace_back(CircleBody(pos, radius, m_circles.size()));
         m_robots.emplace_back(Robot(&m_circles.back(), m_robots.size()));
@@ -175,6 +178,9 @@ public:
 
     void addPuck(const Vec2 & pos, double radius)
     {
+        // pucks store pointers to their CircleBody object which live in m_circles
+        // it's possible that these pointers become invalid once m_circles has to resize
+        // so for now we'll just check to see if that's going to happen and assert
         assert(m_pucks.empty() || m_pucks.size() < m_pucks.capacity());
         m_circles.emplace_back(CircleBody(pos, radius, m_circles.size()));
         m_pucks.emplace_back(Puck(&m_circles.back(), m_pucks.size()));
