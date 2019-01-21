@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <cassert>
+#include <memory>
 
 #include "Vec2.hpp"
 #include "CircleBody.hpp"
@@ -18,7 +19,7 @@ struct CollisionData
 
 class Simulator
 {
-    World & m_world;
+    std::shared_ptr<World> m_world;
 
     // physics configuration
     double m_overlapThreshold   = 0.1;  // allow overlap of this amount without resolution
@@ -34,7 +35,7 @@ class Simulator
     void movement()
     {
         // apply acceleration, velocity to all circles
-        for (auto & circle : m_world.getCircles())
+        for (auto & circle : m_world->getCircles())
         {
             if (circle.v.length() < m_stoppingSpeed) { circle.v = Vec2(0, 0); }
             circle.a = circle.v * -m_deceleration;
@@ -53,20 +54,20 @@ class Simulator
         // we can skip collision checking for any circle that hasn't moved
         // static resolution doesn't alter speed, so movement not recorded
         // so if a circle collided last frame, consider it to have moved
-        for (auto & c1 : m_world.getCircles())
+        for (auto & c1 : m_world->getCircles())
         {
             if (c1.collided) { c1.moved = true; }
             c1.collided = false;
         }
 
         // detect collisions for all circles with other circles
-        for (auto & c1 : m_world.getCircles())
+        for (auto & c1 : m_world->getCircles())
         {
             // if this circle hasn't moved, we don't need to check collisions for it
             if (!c1.moved) { continue; }
 
             // check against each other circle
-            for (auto & c2 : m_world.getCircles())
+            for (auto & c2 : m_world->getCircles())
             {
                 if (c1.p.distSq(c2.p) > (c1.r + c2.r)*(c1.r + c2.r)) { continue; }
                 if (c1.id == c2.id) { continue; }
@@ -95,8 +96,8 @@ class Simulator
             // check for collisions with the bounds of the world
             if (c1.p.x - c1.r < 0) { c1.p.x = c1.r;            c1.collided = true; }
             if (c1.p.y - c1.r < 0) { c1.p.y = c1.r;            c1.collided = true; }
-            if (c1.p.x + c1.r > m_world.width()) { c1.p.x = m_world.width() - c1.r;  c1.collided = true; }
-            if (c1.p.y + c1.r > m_world.height()) { c1.p.y = m_world.height() - c1.r; c1.collided = true; }
+            if (c1.p.x + c1.r > m_world->width()) { c1.p.x = m_world->width() - c1.r;  c1.collided = true; }
+            if (c1.p.y + c1.r > m_world->height()) { c1.p.y = m_world->height() - c1.r; c1.collided = true; }
         }
 
         // calculate and apply dynamic collision resolution
@@ -128,10 +129,10 @@ class Simulator
 
 public:
 
-    Simulator(World & world)
+    Simulator(std::shared_ptr<World> world)
         : m_world(world)
     {
-        
+        m_collisions.reserve(1000);
     }
 
     void update()
@@ -140,7 +141,7 @@ public:
         collisions();
     }
 
-    void setWorld(World & world)
+    void setWorld(std::shared_ptr<World> world)
     {
         m_world = world;
     }
@@ -160,7 +161,7 @@ public:
         return m_computeTimeMax;
     }
 
-    World & getWorld()
+    std::shared_ptr<World> getWorld()
     {
         return m_world;
     }

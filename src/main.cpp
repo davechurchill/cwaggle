@@ -10,7 +10,7 @@ int main()
 {
     // set up a new world that will be used for our simulation
     // let's pull one from the ExampleWorlds
-    World world = ExampleWorlds::GetGridWorld720(2);
+    auto world = ExampleWorlds::GetGridWorld720(2);
 
     // create a new simulator with the given world
     Simulator sim(world);
