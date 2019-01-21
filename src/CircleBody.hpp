@@ -18,9 +18,9 @@ public:
 
     CircleBody(Vec2 position, double radius, int identifier)
         : p(position)
+        , m(radius * 10)
         , r(radius)
         , id(identifier)
-        , m(radius * 10)
     {
 
     }
