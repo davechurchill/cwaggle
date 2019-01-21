@@ -78,7 +78,7 @@ public:
 
     inline double length() const
     {
-        return dist(Vec2(0, 0));
+        return sqrt(x*x + y*y);
     }
 
     inline Vec2 normalize() const

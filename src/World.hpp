@@ -29,7 +29,9 @@ public:
         : m_width(width)
         , m_height(height)
     {
-       
+        m_circles.reserve(20000);
+        m_robots.reserve(20000);
+        m_pucks.reserve(20000);
     }
 
     void addRobot(const Vec2 & pos, double radius)

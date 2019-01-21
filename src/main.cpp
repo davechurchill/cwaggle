@@ -6,6 +6,19 @@
 #include "World.hpp"
 #include "Simulator.hpp"
 
+#include <iostream>
+
+void benchmark()
+{
+    auto world = ExampleWorlds::GetGridWorld720(2);
+    Simulator sim(world);
+    for (size_t i = 0; i < 100000; i++)
+    {
+        if (i % 1000 == 0) { std::cout << i << "\n"; }
+        sim.update();
+    }
+}
+
 int main()
 {
     // set up a new world that will be used for our simulation
@@ -22,6 +35,7 @@ int main()
     GUI gui(sim, 60);
 
     // run the simulation and gui update() function in a loop
+
     while (true)
     {
         // call the world physics simulation update
