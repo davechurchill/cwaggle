@@ -17,7 +17,10 @@ namespace ExampleWorlds
         {
             for (size_t j = 0; j < 90; j += skip)
             {
-                world.addPuck(Vec2(400.0f + (double)i * 10, 100.0f + (double)j * 10), skip*4.0f);
+                Vec2 position(400.0f + (double)i * 10, 100.0f + (double)j * 10);
+                double radius = skip * 4.0f;
+                std::array<uint8_t, 4> color = { 0, 100, 200, 255 };
+                world.addPuck(position, radius, color);
             }
         }
 
@@ -27,13 +30,18 @@ namespace ExampleWorlds
     World GetGridWorld720(size_t skip)
     {
         World world(1280, 720);
-        world.addRobot(Vec2(200, 360), 40);
+
+        world.addRobot(Vec2(200, 180), 40, { 44, 160, 44, 255 });
+        world.addRobot(Vec2(200, 540), 40, { 200, 44, 44, 255 });
 
         for (size_t i = 0; i < 80; i += skip)
         {
             for (size_t j = 0; j < 52; j += skip)
             {
-                world.addPuck(Vec2(400.0f + (double)i * 10, 100.0f + (double)j * 10), skip*4.0f);
+                Vec2 position = Vec2(400.0f + (double)i * 10, 100.0f + (double)j * 10);
+                double radius = skip * 4.0f;
+                std::array<uint8_t, 4> color = { 0, 100, 200, 255 };
+                world.addPuck(position, radius, { 0, 100, 200, 255 });
             }
         }
 

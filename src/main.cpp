@@ -5,6 +5,7 @@
 // allows us to use the WorldState / simulation
 #include "World.hpp"
 #include "Simulator.hpp"
+#include "RobotControllers.hpp"
 
 #include <iostream>
 
@@ -35,9 +36,14 @@ int main()
     GUI gui(sim, 60);
 
     // run the simulation and gui update() function in a loop
-
     while (true)
     {
+        // un-comment to update the robots with a sample controller
+        // for (auto & robot : sim.getWorld().getRobots())
+        // {
+        //    robot.doAction(RobotControllers::TurnController(5, 0.01));
+        // }
+
         // call the world physics simulation update
         sim.update();
 

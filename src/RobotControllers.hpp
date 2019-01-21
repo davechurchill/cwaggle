@@ -6,8 +6,8 @@
 
 namespace RobotControllers
 {
-    RobotAction MoveStraightController(const Robot & robot, const Simulator & sim)
+    RobotAction TurnController(double speed, double angle)
     {
-        return RobotAction(20, 0);
+        return RobotAction(speed, angle);
     }
 };

@@ -26,32 +26,44 @@ class GUI
     void init(const World & world)
     {
         m_sim.setWorld(world);
-        m_circleShapes.clear();
         m_font.loadFromFile("fonts/cour.ttf");
         m_text.setFont(m_font);
         m_text.setCharacterSize(24);
         m_text.setPosition(5, 5);
         m_text.setFillColor(sf::Color::Yellow);
 
-        for (auto & circle : m_sim.getWorld().getCircles())
+        // reset the circle shapes vector
+        m_circleShapes = std::vector<sf::CircleShape>(m_sim.getWorld().getCircles().size(), sf::CircleShape(1, 32));
+
+        // add the robot circle shapes
+        for (auto & robot : m_sim.getWorld().getRobots())
         {
-            sf::CircleShape shape((float)circle.r, 32);
+            auto & circle = m_sim.getWorld().getCircles()[robot.bodyID()];
+            auto & shape = m_circleShapes[circle.id];
+
+            shape.setRadius((float)circle.r);
             shape.setOrigin((float)circle.r, (float)circle.r);
             shape.setPosition((float)circle.p.x, (float)circle.p.y);
             shape.setOutlineThickness(0);
-            shape.setFillColor(sf::Color(0, 100, 200));
-            m_circleShapes.push_back(shape);
+
+            auto color = robot.color();
+            shape.setFillColor(sf::Color(color[0], color[1], color[2], color[3]));
         }
 
-        // set the color of the big circle
-        auto & circle = m_sim.getWorld().getCircles().front();
-        sf::CircleShape shape((float)circle.r, 32);
-        shape.setOrigin((float)circle.r, (float)circle.r);
-        shape.setPosition((float)circle.p.x, (float)circle.p.y);
-        shape.setOutlineThickness(0);
-        shape.setFillColor(sf::Color(200, 44, 44));
-        shape.setOutlineColor(sf::Color(255, 255, 255, 127));
-        m_circleShapes[0] = shape;
+        // add the puck circle shapes
+        for (auto & puck : m_sim.getWorld().getPucks())
+        {
+            auto & circle = m_sim.getWorld().getCircles()[puck.bodyID()];
+            auto & shape = m_circleShapes[circle.id];
+
+            shape.setRadius((float)circle.r);
+            shape.setOrigin((float)circle.r, (float)circle.r);
+            shape.setPosition((float)circle.p.x, (float)circle.p.y);
+            shape.setOutlineThickness(0);
+
+            auto color = puck.color();
+            shape.setFillColor(sf::Color(color[0], color[1], color[2], color[3]));
+        }
     }
 
     void sUserInput()

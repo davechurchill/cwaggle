@@ -34,13 +34,25 @@ class Simulator
 
     void movement()
     {
+        // update robot body's velocity from its heading and angle
+        for (auto & robot : m_world.getRobots())
+        {
+            if (!robot.doAction()) { continue; }
+
+            auto & body = m_world.getCircles()[robot.bodyID()];
+
+            // update the body's velocity based on angle and speed
+            body.v.x = robot.speed() * cos(robot.angle());
+            body.v.y = robot.speed() * sin(robot.angle());
+        }
+
         // apply acceleration, velocity to all circles
         for (auto & circle : m_world.getCircles())
         {
             if (circle.v.length() < m_stoppingSpeed) { circle.v = Vec2(0, 0); }
             circle.a = circle.v * -m_deceleration;
+            circle.p += circle.v; 
             circle.v += circle.a;
-            circle.p += circle.v;
             circle.moved = fabs(circle.v.x) > 0 || fabs(circle.v.y) > 0;
         }
     }
