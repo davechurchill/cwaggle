@@ -23,7 +23,7 @@ class GUI
     std::vector<sf::CircleShape> m_circleShapes;
     std::vector<sf::Color> m_colors;
 
-    void init(std::shared_ptr<World> world)
+    void init(const World & world)
     {
         m_sim.setWorld(world);
         m_circleShapes.clear();
@@ -33,7 +33,7 @@ class GUI
         m_text.setPosition(5, 5);
         m_text.setFillColor(sf::Color::Yellow);
 
-        for (auto & circle : m_sim.getWorld()->getCircles())
+        for (auto & circle : m_sim.getWorld().getCircles())
         {
             sf::CircleShape shape((float)circle.r, 32);
             shape.setOrigin((float)circle.r, (float)circle.r);
@@ -44,7 +44,7 @@ class GUI
         }
 
         // set the color of the big circle
-        auto & circle = m_sim.getWorld()->getCircles().front();
+        auto & circle = m_sim.getWorld().getCircles().front();
         sf::CircleShape shape((float)circle.r, 32);
         shape.setOrigin((float)circle.r, (float)circle.r);
         shape.setPosition((float)circle.p.x, (float)circle.p.y);
@@ -88,7 +88,7 @@ class GUI
             {
                 if (event.mouseButton.button == sf::Mouse::Left)
                 {
-                    for (auto & circle : m_sim.getWorld()->getCircles())
+                    for (auto & circle : m_sim.getWorld().getCircles())
                     {
                         Vec2 mPos((double)event.mouseButton.x, (double)event.mouseButton.y);
                         if (mPos.dist(circle.p) < circle.r)
@@ -101,7 +101,7 @@ class GUI
 
                 if (event.mouseButton.button == sf::Mouse::Right)
                 {
-                    for (auto & circle : m_sim.getWorld()->getCircles())
+                    for (auto & circle : m_sim.getWorld().getCircles())
                     {
                         Vec2 mPos((double)event.mouseButton.x, (double)event.mouseButton.y);
                         if (mPos.dist(circle.p) < circle.r)
@@ -150,7 +150,7 @@ class GUI
     {
         m_window.clear();
 
-        for (auto & circle : m_sim.getWorld()->getCircles())
+        for (auto & circle : m_sim.getWorld().getCircles())
         {
             m_circleShapes[circle.id].setPosition((float)circle.p.x, (float)circle.p.y);
             m_window.draw(m_circleShapes[circle.id]);
@@ -204,7 +204,7 @@ class GUI
 
         // draw score
         std::stringstream ss;
-        ss << "Num Objs: " << m_sim.getWorld()->getCircles().size() << "\n";
+        ss << "Num Objs: " << m_sim.getWorld().getCircles().size() << "\n";
         ss << "CPU Time: " << m_sim.getComputeTime() << "ms\n";
         ss << "Max Time: " << m_sim.getComputeTimeMax() << "ms\n";
         ss << "Debug:    " << (m_debug ? "on" : "off");
@@ -220,7 +220,7 @@ public:
     GUI(Simulator & sim, size_t fps)
         : m_sim(sim)
     {
-        m_window.create(sf::VideoMode((size_t)m_sim.getWorld()->width(), (size_t)m_sim.getWorld()->height()), "CWaggle");
+        m_window.create(sf::VideoMode((size_t)m_sim.getWorld().width(), (size_t)m_sim.getWorld().height()), "CWaggle");
         m_window.setFramerateLimit(fps);
         init(sim.getWorld());
     }
