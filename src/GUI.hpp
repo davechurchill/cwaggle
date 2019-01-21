@@ -70,17 +70,18 @@ class GUI
             {
                 switch (event.key.code)
                 {
-                case sf::Keyboard::Escape: exit(0); break;
-                case sf::Keyboard::Num1:   init(ExampleWorlds::GetGridWorld720(1)); break;
-                case sf::Keyboard::Num2:   init(ExampleWorlds::GetGridWorld720(2)); break;
-                case sf::Keyboard::Num3:   init(ExampleWorlds::GetGridWorld720(3)); break;
-                case sf::Keyboard::Num4:   init(ExampleWorlds::GetGridWorld720(4)); break;
-                case sf::Keyboard::Num5:   init(ExampleWorlds::GetGridWorld720(5)); break;
-                case sf::Keyboard::Num6:   init(ExampleWorlds::GetGridWorld720(6)); break;
-                case sf::Keyboard::Num7:   init(ExampleWorlds::GetGridWorld720(7)); break;
-                case sf::Keyboard::Num8:   init(ExampleWorlds::GetGridWorld720(8)); break;
-                case sf::Keyboard::Num9:   init(ExampleWorlds::GetGridWorld720(9)); break;
-                case sf::Keyboard::D:      m_debug = !m_debug; break;
+                    case sf::Keyboard::Escape: exit(0); break;
+                    case sf::Keyboard::Num1:   init(ExampleWorlds::GetGridWorld720(1)); break;
+                    case sf::Keyboard::Num2:   init(ExampleWorlds::GetGridWorld720(2)); break;
+                    case sf::Keyboard::Num3:   init(ExampleWorlds::GetGridWorld720(3)); break;
+                    case sf::Keyboard::Num4:   init(ExampleWorlds::GetGridWorld720(4)); break;
+                    case sf::Keyboard::Num5:   init(ExampleWorlds::GetGridWorld720(5)); break;
+                    case sf::Keyboard::Num6:   init(ExampleWorlds::GetGridWorld720(6)); break;
+                    case sf::Keyboard::Num7:   init(ExampleWorlds::GetGridWorld720(7)); break;
+                    case sf::Keyboard::Num8:   init(ExampleWorlds::GetGridWorld720(8)); break;
+                    case sf::Keyboard::Num9:   init(ExampleWorlds::GetGridWorld720(9)); break;
+                    case sf::Keyboard::D:      m_debug = !m_debug; break;
+                    default: break;
                 }
             }
 
