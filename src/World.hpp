@@ -9,7 +9,7 @@
 #include "Robot.hpp"
 #include "Puck.hpp"
 #include "Timer.hpp"
-
+#include "LineBody.hpp"
 
 class World
 {
@@ -19,6 +19,7 @@ class World
 
     // stores all rigid circle bodies and collision data
     std::vector<CircleBody>     m_circles;
+    std::vector<LineBody>       m_lines;
     
     // pucks and robots will eventually do things
     // they store pointers to their respective CircleBody stored in m_circles
@@ -56,6 +57,11 @@ public:
         m_pucks.emplace_back(Puck(m_pucks.size(), m_circles.back().id, color));
     }
 
+    void addLine(const Vec2 & start, const Vec2 & end, double radius)
+    {
+        m_lines.emplace_back(LineBody(start, end, radius));
+    }
+
     std::vector<CircleBody> & getCircles()
     {
         return m_circles;
@@ -69,6 +75,11 @@ public:
     std::vector<Puck> & getPucks()
     {
         return m_pucks;
+    }
+
+    std::vector<LineBody> & getLines()
+    {
+        return m_lines;
     }
 
     double width() const

@@ -6,6 +6,7 @@
 #include "Vec2.hpp"
 #include "Simulator.hpp"
 #include "ExampleWorlds.hpp"
+#include "LineBody.hpp"
 
 class GUI
 {
@@ -17,6 +18,8 @@ class GUI
     sf::Vector2f        m_mousePos;
     CircleBody *        m_selected = nullptr;
     CircleBody *        m_shooting = nullptr;
+    LineBody *          m_selectedLine = nullptr;
+    bool                m_selectedLineStart = false;
     bool                m_debug = false;
     Vec2                m_speed;
 
@@ -110,6 +113,25 @@ class GUI
                             break;
                         }
                     }
+
+                    for (auto & line : m_sim.getWorld().getLines())
+                    {
+                        Vec2 mPos((double)event.mouseButton.x, (double)event.mouseButton.y);
+
+                        if (mPos.dist(line.s) < line.r)
+                        {
+                            m_selectedLine = &line;
+                            m_selectedLineStart = true;
+                            break;
+                        }
+
+                        if (mPos.dist(line.e) < line.r)
+                        {
+                            m_selectedLine = &line;
+                            m_selectedLineStart = false;
+                            break;
+                        }
+                    }
                 }
 
                 if (event.mouseButton.button == sf::Mouse::Right)
@@ -131,6 +153,7 @@ class GUI
                 if (event.mouseButton.button == sf::Mouse::Left)
                 {
                     m_selected = nullptr;
+                    m_selectedLine = nullptr;
                 }
 
                 if (event.mouseButton.button == sf::Mouse::Right)
@@ -157,6 +180,31 @@ class GUI
             diff /= 10;
             m_selected->v = diff;
         }
+
+        if (m_selectedLine != nullptr)
+        {
+            if (m_selectedLineStart)
+            {
+                m_selectedLine->s.x = m_mousePos.x;
+                m_selectedLine->s.y = m_mousePos.y;
+            }
+            else
+            {
+                m_selectedLine->e.x = m_mousePos.x;
+                m_selectedLine->e.y = m_mousePos.y;
+            }
+        }
+    }
+
+    void drawLine(Vec2 p1, Vec2 p2, sf::Color color)
+    {
+        sf::Vertex line[] =
+        {
+            sf::Vertex(sf::Vector2f((float)p1.x, (float)p1.y), color),
+            sf::Vertex(sf::Vector2f((float)p2.x, (float)p2.y), color)
+        };
+
+        m_window.draw(line, 2, sf::Lines);
     }
 
     void sRender()
@@ -180,39 +228,38 @@ class GUI
                 velPoint = circle.p + circle.v.normalize() * circle.r;
             }
 
-            // draw velocity vectors
-            sf::Vertex line[] =
-            {
-                sf::Vertex(sf::Vector2f((float)circle.p.x, (float)circle.p.y), sf::Color(160, 160, 160)),
-                sf::Vertex(sf::Vector2f((float)velPoint.x, (float)velPoint.y), sf::Color(160, 160, 160))
-            };
-
-            m_window.draw(line, 2, sf::Lines);
+            drawLine(circle.p, velPoint, sf::Color(160, 160, 160));
         }
 
-        for (auto & collision : m_sim.getCollisions())
+        for (auto & line : m_sim.getWorld().getLines())
         {
-            sf::Vertex line[] =
-            {
-                sf::Vertex(sf::Vector2f((float)collision.c1->p.x, (float)collision.c1->p.y), sf::Color::Green),
-                sf::Vertex(sf::Vector2f((float)collision.c2->p.x, (float)collision.c2->p.y), sf::Color::Green)
-            };
+            sf::CircleShape circle(line.r, 32);
+            circle.setOrigin(line.r, line.r);
+            circle.setOutlineThickness(1);
+            circle.setPosition(line.s.x, line.s.y);
+            m_window.draw(circle);
+            circle.setPosition(line.e.x, line.e.y);
+            m_window.draw(circle);
 
-            if (m_debug)
+            Vec2 normal(-(line.e.y - line.s.y), (line.e.x - line.s.x));
+            normal = normal.normalize() * line.r;
+
+            drawLine(line.s + normal, line.e + normal, sf::Color::White);
+            drawLine(line.s - normal, line.e - normal, sf::Color::White);
+        }
+
+        if (m_debug)
+        {
+            for (auto & collision : m_sim.getCollisions())
             {
-                m_window.draw(line, 2, sf::Lines);
+                drawLine(collision.c1->p, collision.c2->p, sf::Color::Green);
             }
         }
+        
 
         if (m_shooting != nullptr)
         {
-            sf::Vertex line[] =
-            {
-                sf::Vertex(sf::Vector2f((float)m_shooting->p.x, (float)m_shooting->p.y), sf::Color::Red),
-                sf::Vertex(m_mousePos, sf::Color::Red)
-            };
-
-            m_window.draw(line, 2, sf::Lines);
+            drawLine(m_shooting->p, Vec2(m_mousePos.x, m_mousePos.y), sf::Color::Red);
         }
 
         // draw score

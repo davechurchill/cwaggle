@@ -45,8 +45,13 @@ int main()
         // }
 
         // call the world physics simulation update
-        sim.update();
-
+        // parameter = how much sim time should pass (default 1.0)
+        // the smaller the time update, the more accurate/smooth the simulation
+        for (size_t i = 0; i < 10; i++)
+        {
+            sim.update(0.1);
+        }
+        
         // if a gui exists, call for its display to update
         // note: simulation is limited by gui frame rate limit
         gui.update();

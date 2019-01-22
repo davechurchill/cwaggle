@@ -45,6 +45,10 @@ namespace ExampleWorlds
             }
         }
 
+        world.addLine(Vec2(100, 260), Vec2(300, 260), 10);
+        world.addLine(Vec2(100, 360), Vec2(300, 360), 10);
+        world.addLine(Vec2(100, 460), Vec2(300, 460), 10);
+
         return world;
     }
 };
