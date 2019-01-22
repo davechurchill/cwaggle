@@ -62,8 +62,8 @@ class Simulator
 
     void collisions()
     {
-        Timer t;
-        t.start();
+        Timer timer;
+        timer.start();
         m_collisions.clear();
         m_fakeBodies.clear();
 
@@ -184,7 +184,7 @@ class Simulator
         }
 
         // record the time that this collision calculation took
-        m_computeTime = t.getElapsedTimeInMilliSec();
+        m_computeTime = timer.getElapsedTimeInMilliSec();
         m_computeTimeMax = m_computeTime > m_computeTimeMax ? m_computeTime : m_computeTimeMax;
     }
 

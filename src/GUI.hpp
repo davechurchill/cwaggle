@@ -233,12 +233,12 @@ class GUI
 
         for (auto & line : m_sim.getWorld().getLines())
         {
-            sf::CircleShape circle(line.r, 32);
-            circle.setOrigin(line.r, line.r);
+            sf::CircleShape circle((float)line.r, 32);
+            circle.setOrigin((float)line.r, (float)line.r);
             circle.setOutlineThickness(1);
-            circle.setPosition(line.s.x, line.s.y);
+            circle.setPosition((float)line.s.x, (float)line.s.y);
             m_window.draw(circle);
-            circle.setPosition(line.e.x, line.e.y);
+            circle.setPosition((float)line.e.x, (float)line.e.y);
             m_window.draw(circle);
 
             Vec2 normal(-(line.e.y - line.s.y), (line.e.x - line.s.x));
