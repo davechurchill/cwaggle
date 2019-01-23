@@ -10,6 +10,7 @@
 #include "Puck.hpp"
 #include "Timer.hpp"
 #include "LineBody.hpp"
+#include "ValueGrid.hpp"
 
 class World
 {
@@ -25,6 +26,8 @@ class World
     // they store pointers to their respective CircleBody stored in m_circles
     std::vector<Robot>          m_robots;
     std::vector<Puck>           m_pucks;
+
+    ValueGrid                   m_grid;
 
 public:
 
@@ -62,6 +65,11 @@ public:
         m_lines.emplace_back(LineBody(start, end, radius));
     }
 
+    void setGrid(const ValueGrid & grid)
+    {
+        m_grid = grid;
+    }
+
     std::vector<CircleBody> & getCircles()
     {
         return m_circles;
@@ -80,6 +88,11 @@ public:
     std::vector<LineBody> & getLines()
     {
         return m_lines;
+    }
+
+    ValueGrid & getGrid()
+    {
+        return m_grid;
     }
 
     double width() const

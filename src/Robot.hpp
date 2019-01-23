@@ -1,10 +1,12 @@
 #pragma once
 
-#include "CircleBody.hpp"
 #include "RobotAction.hpp"
+#include "Sensor.hpp"
+
 #include <iostream>
 #include <stdint.h>
 #include <array>
+
 
 class Robot
 {
@@ -14,7 +16,7 @@ class Robot
     double m_speed  = 0;
     double m_turn   = 0;
     std::array<uint8_t, 4> m_color = { 255, 0, 0, 255 };
-
+    std::vector<Sensor> m_sensors;
     RobotAction m_action;
     bool m_doAction = false;
 
@@ -35,6 +37,12 @@ public:
     inline const auto   color()     const { return m_color; }
     inline const auto   doAction()  const { return m_doAction; }
     inline const auto & action()    const { return m_action; }
+    inline const auto & sensors()   const { return m_sensors; }
+
+    inline void addSensor(const Sensor & sensor)
+    {
+        m_sensors.push_back(sensor);
+    }
 
     inline void setColor(decltype(m_color) color) 
     { 

@@ -14,6 +14,7 @@
     <ClCompile Include="..\src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\ExampleGrids.hpp" />
     <ClInclude Include="..\src\ExampleWorlds.hpp" />
     <ClInclude Include="..\src\GUI.hpp" />
     <ClInclude Include="..\src\CircleBody.hpp" />
@@ -22,8 +23,11 @@
     <ClInclude Include="..\src\Robot.hpp" />
     <ClInclude Include="..\src\RobotAction.hpp" />
     <ClInclude Include="..\src\RobotControllers.hpp" />
+    <ClInclude Include="..\src\Sensors.hpp" />
+    <ClInclude Include="..\src\Sensor.hpp" />
     <ClInclude Include="..\src\Simulator.hpp" />
     <ClInclude Include="..\src\Timer.hpp" />
+    <ClInclude Include="..\src\ValueGrid.hpp" />
     <ClInclude Include="..\src\Vec2.hpp" />
     <ClInclude Include="..\src\World.hpp" />
   </ItemGroup>

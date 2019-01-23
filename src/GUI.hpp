@@ -7,6 +7,7 @@
 #include "Simulator.hpp"
 #include "ExampleWorlds.hpp"
 #include "LineBody.hpp"
+#include "Sensors.hpp"
 
 class GUI
 {
@@ -21,10 +22,11 @@ class GUI
     LineBody *          m_selectedLine = nullptr;
     bool                m_selectedLineStart = false;
     bool                m_debug = false;
-    Vec2                m_speed;
+    bool                m_grid = true;
 
     std::vector<sf::CircleShape> m_circleShapes;
     std::vector<sf::Color> m_colors;
+    std::vector<sf::RectangleShape> m_gridRectangles;
 
     void init(const World & world)
     {
@@ -67,6 +69,33 @@ class GUI
             auto color = puck.color();
             shape.setFillColor(sf::Color(color[0], color[1], color[2], color[3]));
         }
+
+        // create the grid rectangle shapes
+        auto & grid = m_sim.getWorld().getGrid();
+        if (grid.width() > 0)
+        {
+            double rWidth = m_sim.getWorld().width() / (double)grid.width();
+            double rHeight = m_sim.getWorld().height() / (double)grid.height();
+            sf::Vector2f rectSize((float)rWidth, (float)rHeight);
+
+            // create the 2D grid of rectangles 
+            m_gridRectangles = std::vector<sf::RectangleShape>(grid.width() * grid.height());
+
+            // set the positions and colors of the rectangles
+            for (size_t x = 0; x < grid.width(); x++)
+            {
+                for (size_t y = 0; y < grid.height(); y++)
+                {
+                    sf::Vector2f rPos(x * (float)rWidth, y * (float)rHeight);
+                    uint8_t c = (uint8_t)(grid.get(x, y) * 255);
+                    sf::Color color(c, c, c);
+                    size_t index = y * grid.width() + x;
+                    m_gridRectangles[index].setSize(rectSize);
+                    m_gridRectangles[index].setFillColor(color);
+                    m_gridRectangles[index].setPosition(rPos);
+                }
+            }
+        }
     }
 
     void sUserInput()
@@ -96,6 +125,7 @@ class GUI
                     case sf::Keyboard::Num8:   init(ExampleWorlds::GetGridWorld720(8)); break;
                     case sf::Keyboard::Num9:   init(ExampleWorlds::GetGridWorld720(9)); break;
                     case sf::Keyboard::D:      m_debug = !m_debug; break;
+                    case sf::Keyboard::G:      m_grid = !m_grid; break;
                     default: break;
                 }
             }
@@ -211,6 +241,17 @@ class GUI
     {
         m_window.clear();
 
+
+        // draw the value grid
+        if (m_grid)
+        {
+            for (auto & rect : m_gridRectangles)
+            {
+                m_window.draw(rect);
+            }
+        }
+
+
         for (auto & circle : m_sim.getWorld().getCircles())
         {
             m_circleShapes[circle.id].setPosition((float)circle.p.x, (float)circle.p.y);
@@ -229,6 +270,20 @@ class GUI
             }
 
             drawLine(circle.p, velPoint, sf::Color(160, 160, 160));
+        }
+
+        // draw robot sensors
+        for (auto & robot : m_sim.getWorld().getRobots())
+        {
+            for (auto & sensor : robot.sensors())
+            {
+                sf::CircleShape sensorShape(5, 32);
+                sensorShape.setOrigin(5, 5);
+                Vec2 pos = Sensors::GetSensorPosition(sensor, m_sim.getWorld());
+                sensorShape.setPosition((float)pos.x, (float)pos.y);
+                sensorShape.setFillColor(sf::Color::White);
+                m_window.draw(sensorShape);
+            }
         }
 
         for (auto & line : m_sim.getWorld().getLines())
@@ -255,7 +310,6 @@ class GUI
                 drawLine(collision.c1->p, collision.c2->p, sf::Color::Green);
             }
         }
-        
 
         if (m_shooting != nullptr)
         {

@@ -4,6 +4,7 @@
 #include "Robot.hpp"
 #include "RobotAction.hpp"
 #include "World.hpp"
+#include "ExampleGrids.hpp"
 
 namespace ExampleWorlds
 {
@@ -32,6 +33,10 @@ namespace ExampleWorlds
         World world(1280, 720);
 
         world.addRobot(Vec2(200, 180), 40, { 44, 160, 44, 255 });
+        world.getRobots()[0].addSensor(Sensor(30, 50, 0));
+        world.getRobots()[0].addSensor(Sensor(-30, 50, 0));
+        world.getRobots()[0].addSensor(Sensor(0, 50, 0));
+
         world.addRobot(Vec2(200, 540), 40, { 200, 44, 44, 255 });
 
         for (size_t i = 0; i < 80; i += skip)
@@ -48,6 +53,8 @@ namespace ExampleWorlds
         world.addLine(Vec2(100, 260), Vec2(300, 260), 10);
         world.addLine(Vec2(100, 360), Vec2(300, 360), 10);
         world.addLine(Vec2(100, 460), Vec2(300, 460), 10);
+
+        world.setGrid(ExampleGrids::GetInverseCenterDistanceGrid(64, 36));
 
         return world;
     }

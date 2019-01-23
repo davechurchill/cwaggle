@@ -2,6 +2,10 @@
 
 #include "Vec2.hpp"
 
+#include <stdint.h>
+#include <array>
+#include <vector>
+
 class CircleBody
 {
 public:
@@ -13,10 +17,10 @@ public:
     size_t  id      = 0;        // id
     bool    moved   = false;    // moved last update
     bool    collided = false;   // collided last update
-    
+
     CircleBody() {}
 
-    CircleBody(Vec2 position, double radius, int identifier)
+    CircleBody(const Vec2 & position, double radius, int identifier)
         : p(position)
         , m(radius * 10)
         , r(radius)
