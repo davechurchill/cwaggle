@@ -7,7 +7,7 @@
 #include "Simulator.hpp"
 #include "ExampleWorlds.hpp"
 #include "LineBody.hpp"
-#include "Sensors.hpp"
+#include "SensorTools.hpp"
 
 class GUI
 {
@@ -17,20 +17,21 @@ class GUI
     sf::Text            m_text;
     sf::Clock           m_clock;
     sf::Vector2f        m_mousePos;
-    CircleBody *        m_selected = nullptr;
-    CircleBody *        m_shooting = nullptr;
+    Entity              m_selected;
+    Entity              m_shooting;
     LineBody *          m_selectedLine = nullptr;
     bool                m_selectedLineStart = false;
     bool                m_debug = false;
-    bool                m_grid = true;
+    bool                m_grid = false;
+    bool                m_sensors = false;
 
     std::vector<sf::CircleShape> m_circleShapes;
     std::vector<sf::Color> m_colors;
     std::vector<sf::RectangleShape> m_gridRectangles;
 
-    void init(const World & world)
+    void init(WorldECS & world)
     {
-        m_sim.setWorld(world);
+        //m_sim.setWorld(world);
         m_font.loadFromFile("fonts/cour.ttf");
         m_text.setFont(m_font);
         m_text.setCharacterSize(24);
@@ -38,37 +39,40 @@ class GUI
         m_text.setFillColor(sf::Color::Yellow);
 
         // reset the circle shapes vector
-        m_circleShapes = std::vector<sf::CircleShape>(m_sim.getWorld().getCircles().size(), sf::CircleShape(1, 32));
+        m_circleShapes = std::vector<sf::CircleShape>(m_sim.getWorld().getEntities().size(), sf::CircleShape(1, 32));
+
+        std::cout << world.getEntities().size() << "\n";
+        std::cout << m_sim.getWorld().getEntities().size() << "\n";
 
         // add the robot circle shapes
-        for (auto & robot : m_sim.getWorld().getRobots())
+        for (auto e : m_sim.getWorld().getEntities())
         {
-            auto & circle = m_sim.getWorld().getCircles()[robot.bodyID()];
-            auto & shape = m_circleShapes[circle.id];
+            auto & b = e.getComponent<CBody>();
+            auto & shape = m_circleShapes[e.id()];
 
-            shape.setRadius((float)circle.r);
-            shape.setOrigin((float)circle.r, (float)circle.r);
-            shape.setPosition((float)circle.p.x, (float)circle.p.y);
+            shape.setRadius((float)b.r);
+            shape.setOrigin((float)b.r, (float)b.r);
+            shape.setPosition((float)b.p.x, (float)b.p.y);
             shape.setOutlineThickness(0);
 
-            auto color = robot.color();
-            shape.setFillColor(sf::Color(color[0], color[1], color[2], color[3]));
+            auto & color = e.getComponent<CColor>();
+            shape.setFillColor(sf::Color(color.r, color.g, color.b, color.a));
         }
 
-        // add the puck circle shapes
-        for (auto & puck : m_sim.getWorld().getPucks())
-        {
-            auto & circle = m_sim.getWorld().getCircles()[puck.bodyID()];
-            auto & shape = m_circleShapes[circle.id];
+        //// add the puck circle shapes
+        //for (auto & puck : m_sim.getWorld().getPucks())
+        //{
+        //    auto & circle = m_sim.getWorld().getCircles()[puck.bodyID()];
+        //    auto & shape = m_circleShapes[circle.id];
 
-            shape.setRadius((float)circle.r);
-            shape.setOrigin((float)circle.r, (float)circle.r);
-            shape.setPosition((float)circle.p.x, (float)circle.p.y);
-            shape.setOutlineThickness(0);
+        //    shape.setRadius((float)circle.r);
+        //    shape.setOrigin((float)circle.r, (float)circle.r);
+        //    shape.setPosition((float)circle.p.x, (float)circle.p.y);
+        //    shape.setOutlineThickness(0);
 
-            auto color = puck.color();
-            shape.setFillColor(sf::Color(color[0], color[1], color[2], color[3]));
-        }
+        //    auto color = puck.color();
+        //    shape.setFillColor(sf::Color(color[0], color[1], color[2], color[3]));
+        //}
 
         // create the grid rectangle shapes
         auto & grid = m_sim.getWorld().getGrid();
@@ -115,7 +119,7 @@ class GUI
                 switch (event.key.code)
                 {
                     case sf::Keyboard::Escape: exit(0); break;
-                    case sf::Keyboard::Num1:   init(ExampleWorlds::GetGridWorld720(1)); break;
+                    /*case sf::Keyboard::Num1:   init(ExampleWorlds::GetGridWorld720(1)); break;
                     case sf::Keyboard::Num2:   init(ExampleWorlds::GetGridWorld720(2)); break;
                     case sf::Keyboard::Num3:   init(ExampleWorlds::GetGridWorld720(3)); break;
                     case sf::Keyboard::Num4:   init(ExampleWorlds::GetGridWorld720(4)); break;
@@ -123,9 +127,10 @@ class GUI
                     case sf::Keyboard::Num6:   init(ExampleWorlds::GetGridWorld720(6)); break;
                     case sf::Keyboard::Num7:   init(ExampleWorlds::GetGridWorld720(7)); break;
                     case sf::Keyboard::Num8:   init(ExampleWorlds::GetGridWorld720(8)); break;
-                    case sf::Keyboard::Num9:   init(ExampleWorlds::GetGridWorld720(9)); break;
+                    case sf::Keyboard::Num9:   init(ExampleWorlds::GetGridWorld720(9)); break;*/
                     case sf::Keyboard::D:      m_debug = !m_debug; break;
                     case sf::Keyboard::G:      m_grid = !m_grid; break;
+                    case sf::Keyboard::S:      m_sensors = !m_sensors; break;
                     default: break;
                 }
             }
@@ -134,17 +139,17 @@ class GUI
             {
                 if (event.mouseButton.button == sf::Mouse::Left)
                 {
-                    for (auto & circle : m_sim.getWorld().getCircles())
+                    for (auto e : m_sim.getWorld().getEntities())
                     {
                         Vec2 mPos((double)event.mouseButton.x, (double)event.mouseButton.y);
-                        if (mPos.dist(circle.p) < circle.r)
+                        if (mPos.dist(e.getComponent<CBody>().p) < e.getComponent<CBody>().r)
                         {
-                            m_selected = &circle;
+                            m_selected = e;
                             break;
                         }
                     }
 
-                    for (auto & line : m_sim.getWorld().getLines())
+                    /*for (auto & line : m_sim.getWorld().getLines())
                     {
                         Vec2 mPos((double)event.mouseButton.x, (double)event.mouseButton.y);
 
@@ -161,17 +166,17 @@ class GUI
                             m_selectedLineStart = false;
                             break;
                         }
-                    }
+                    }*/
                 }
 
                 if (event.mouseButton.button == sf::Mouse::Right)
                 {
-                    for (auto & circle : m_sim.getWorld().getCircles())
+                    for (auto & e : m_sim.getWorld().getEntities())
                     {
                         Vec2 mPos((double)event.mouseButton.x, (double)event.mouseButton.y);
-                        if (mPos.dist(circle.p) < circle.r)
+                        if (mPos.dist(e.getComponent<CBody>().p) < e.getComponent<CBody>().r)
                         {
-                            m_shooting = &circle;
+                            m_shooting = e;
                             break;
                         }
                     }
@@ -182,17 +187,18 @@ class GUI
             {
                 if (event.mouseButton.button == sf::Mouse::Left)
                 {
-                    m_selected = nullptr;
-                    m_selectedLine = nullptr;
+                    m_selected = Entity();
+                    //m_selectedLine = Entity();
                 }
 
                 if (event.mouseButton.button == sf::Mouse::Right)
                 {
-                    if (m_shooting != nullptr)
+                    if (m_shooting.id() != 0)
                     {
-                        m_shooting->v.x = (m_shooting->p.x - m_mousePos.x) / 10.0f;
-                        m_shooting->v.y = (m_shooting->p.y - m_mousePos.y) / 10.0f;
-                        m_shooting = nullptr;
+                        auto & t = m_shooting.getComponent<CBody>();
+                        t.v.x = (t.p.x - m_mousePos.x) / 10.0f;
+                        t.v.y = (t.p.y - m_mousePos.y) / 10.0f;
+                        m_shooting = Entity();
                     }
                 }
             }
@@ -204,11 +210,12 @@ class GUI
         }
 
 
-        if (m_selected != nullptr)
+        if (m_selected.id() != 0)
         {
-            Vec2 diff(m_mousePos.x - m_selected->p.x, m_mousePos.y - m_selected->p.y);
+            auto & t = m_selected.getComponent<CBody>();
+            Vec2 diff(m_mousePos.x - t.p.x, m_mousePos.y - t.p.y);
             diff /= 10;
-            m_selected->v = diff;
+            t.v = diff;
         }
 
         if (m_selectedLine != nullptr)
@@ -252,41 +259,47 @@ class GUI
         }
 
 
-        for (auto & circle : m_sim.getWorld().getCircles())
+        for (auto e : m_sim.getWorld().getEntities())
         {
-            m_circleShapes[circle.id].setPosition((float)circle.p.x, (float)circle.p.y);
-            m_window.draw(m_circleShapes[circle.id]);
+            auto & b = e.getComponent<CBody>();
+
+            m_circleShapes[e.id()].setPosition((float)b.p.x, (float)b.p.y);
+            m_window.draw(m_circleShapes[e.id()]);
 
             Vec2 velPoint;
-            double vLength = circle.v.length();
+            double vLength = b.v.length();
             if (vLength == 0)
             {
-                velPoint = Vec2(circle.p.x + circle.r, circle.p.y);
+                velPoint = Vec2(b.p.x + b.r, b.p.y);
                 continue;
             }
             else
             {
-                velPoint = circle.p + circle.v.normalize() * circle.r;
+                velPoint = b.p + b.v.normalize() * b.r;
             }
 
-            drawLine(circle.p, velPoint, sf::Color(160, 160, 160));
+            drawLine(b.p, velPoint, sf::Color(255, 255, 255));
         }
 
         // draw robot sensors
-        for (auto & robot : m_sim.getWorld().getRobots())
+        /*if (m_sensors)
         {
-            for (auto & sensor : robot.sensors())
+            float sensorRadius = 2;
+            for (auto & robot : m_sim.getWorld().getRobots())
             {
-                sf::CircleShape sensorShape(5, 32);
-                sensorShape.setOrigin(5, 5);
-                Vec2 pos = Sensors::GetSensorPosition(sensor, m_sim.getWorld());
-                sensorShape.setPosition((float)pos.x, (float)pos.y);
-                sensorShape.setFillColor(sf::Color::White);
-                m_window.draw(sensorShape);
+                for (auto & sensor : robot.gridSensors())
+                {
+                    sf::CircleShape sensorShape(sensorRadius, 32);
+                    sensorShape.setOrigin(sensorRadius, sensorRadius);
+                    Vec2 pos = SensorTools::GetGridSensorPosition(sensor, m_sim.getWorld());
+                    sensorShape.setPosition((float)pos.x, (float)pos.y);
+                    sensorShape.setFillColor(sf::Color::White);
+                    m_window.draw(sensorShape);
+                }
             }
-        }
+        }*/
 
-        for (auto & line : m_sim.getWorld().getLines())
+        /*for (auto & line : m_sim.getWorld().getLines())
         {
             sf::CircleShape circle((float)line.r, 32);
             circle.setOrigin((float)line.r, (float)line.r);
@@ -301,24 +314,24 @@ class GUI
 
             drawLine(line.s + normal, line.e + normal, sf::Color::White);
             drawLine(line.s - normal, line.e - normal, sf::Color::White);
-        }
+        }*/
 
         if (m_debug)
         {
             for (auto & collision : m_sim.getCollisions())
             {
-                drawLine(collision.c1->p, collision.c2->p, sf::Color::Green);
+                drawLine(collision.b1->p, collision.b2->p, sf::Color::Green);
             }
         }
 
-        if (m_shooting != nullptr)
+        if (m_shooting.id() != 0)
         {
-            drawLine(m_shooting->p, Vec2(m_mousePos.x, m_mousePos.y), sf::Color::Red);
+            drawLine(m_shooting.getComponent<CBody>().p, Vec2(m_mousePos.x, m_mousePos.y), sf::Color::Red);
         }
 
         // draw score
         std::stringstream ss;
-        ss << "Num Objs: " << m_sim.getWorld().getCircles().size() << "\n";
+        ss << "Num Objs: " << m_sim.getWorld().getEntities().size() << "\n";
         ss << "CPU Time: " << m_sim.getComputeTime() << "ms\n";
         ss << "Max Time: " << m_sim.getComputeTimeMax() << "ms\n";
         ss << "Debug:    " << (m_debug ? "on" : "off");

@@ -16,7 +16,7 @@ public:
     double  r       = 0;        // radius
     size_t  id      = 0;        // id
     bool    moved   = false;    // moved last update
-    bool    collided = false;   // collided last update
+    bool    collided = true;   // collided last update
 
     CircleBody() {}
 

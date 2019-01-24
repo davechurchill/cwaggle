@@ -9,22 +9,24 @@
 
 #include <iostream>
 
-void benchmark()
-{
-    auto world = ExampleWorlds::GetGridWorld720(2);
-    Simulator sim(world);
-    for (size_t i = 0; i < 100000; i++)
-    {
-        if (i % 1000 == 0) { std::cout << i << "\n"; }
-        sim.update();
-    }
-}
+//void benchmark()
+//{
+//    auto world = ExampleWorlds::GetGridWorld720(2);
+//    Simulator sim(world);
+//    for (size_t i = 0; i < 100000; i++)
+//    {
+//        if (i % 1000 == 0) { std::cout << i << "\n"; }
+//        sim.update();
+//    }
+//}
 
 int main()
 {
     // set up a new world that will be used for our simulation
     // let's pull one from the ExampleWorlds
-    auto world = ExampleWorlds::GetGridWorld720(2);
+    auto world = ExampleWorlds::GetWorldECS(2);
+
+    std::cout << "World Size: " << world.getEntities().size() << "\n";
 
     // create a new simulator with the given world
     Simulator sim(world);
@@ -33,7 +35,7 @@ int main()
     // the frame rate limit should be set at least as high as your monitor refresh rate
     // this is completely optional, simulation will run with no visualization
     // GUI can also be created at any time to start visualizing an ongoing simulation
-    GUI gui(sim, 60);
+    GUI gui(sim, 144);
 
     std::cout << "CircleBody: " << sizeof(CircleBody) << "\n";
 
@@ -41,10 +43,18 @@ int main()
     while (true)
     {
         // un-comment to update the robots with a sample controller
-         for (auto & robot : sim.getWorld().getRobots())
+         /*for (auto & robot : sim.getWorld().getRobots())
          {
-            robot.doAction(RobotControllers::TurnController(5, 0.01));
-         }
+             if (robot.type() == RobotTypes::Outie)
+             {
+                 robot.doAction(RobotControllers::TurnController(1, 0.03));
+             }
+             else if (robot.type() == RobotTypes::Innie)
+             {
+                 robot.doAction(RobotControllers::TurnController(1, -0.03));
+             }
+            
+         }*/
 
         // call the world physics simulation update
         // parameter = how much sim time should pass (default 1.0)
