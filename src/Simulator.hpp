@@ -80,14 +80,10 @@ class Simulator
 
         size_t numEntities = m_world.getEntities().size();
         auto & bodies = EntityMemoryPool::Instance().getBodies();
-
-        size_t i1 = 0;
-
-        // detect collisions for all circles
-        //for (auto & e1 : m_world.getEntities())
-        for (auto & b1 : bodies)
+        auto end = bodies.begin() + numEntities;
+        for (auto it1 = bodies.begin(); it1 != end; it1++)
         {
-            if (i1++ > numEntities) break;
+            auto & b1 = *it1;
 
             // step 1: check collisions of all circles against all lines
             //for (auto & edge : m_world.getLines())
@@ -128,25 +124,20 @@ class Simulator
             //        c1.collided = true;
             //    }
             //}
-
-            //auto & b1 = e1.getComponent<CBody>();
-
+            
             // if this circle hasn't moved, we don't need to check collisions for it
             if (!b1.moved) { continue; }
 
             // step 2: check collisions of all circles against all other circles
-            size_t i2 = 0;
-            for (auto & b2 : bodies)
+            for (auto it2 = bodies.begin(); it2 != end; it2++)
             {
-                if (i2++ > numEntities) { break; }
-                //auto & b2 = e2.getComponent<CBody>();
+                auto & b2 = *it2;
 
                 if (b1.p.distSq(b2.p) > (b1.r + b2.r)*(b1.r + b2.r)) { continue; }
-                double dist = b1.p.dist(b2.p);
-                if (dist == 0) { continue; }
+                if (it1 == it2) { continue; }
 
                 // calculate the actual distance and overlap between circles
-                //double dist = b1.p.dist(b2.p);
+                double dist = b1.p.dist(b2.p);
                 double overlap = (b1.r + b2.r) - dist;
 
                 // circles overlap if the overlap is positive

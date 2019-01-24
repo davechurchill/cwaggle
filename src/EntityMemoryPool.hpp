@@ -6,7 +6,6 @@
 
 typedef std::tuple <
     std::vector<CBody>,
-    std::vector<CTransform2>,
     std::vector<CColor>,
     std::vector<std::string>,
     std::vector<bool>
@@ -21,7 +20,6 @@ class EntityMemoryPool
 
     EntityMemoryPool(size_t size)
     {
-        std::get<std::vector<CTransform2>>(m_data).resize(size);
         std::get<std::vector<CBody>>(m_data).resize(size);
         std::get<std::vector<CColor>>(m_data).resize(size);
         std::get<std::vector<std::string>>(m_data).resize(size);
@@ -38,7 +36,6 @@ public:
 
     size_t EntityMemoryPool::addEntity(const std::string & tag)
     {
-        std::get<std::vector<CTransform2>>(m_data)[m_numEntities] = CTransform2();
         std::get<std::vector<CBody>>(m_data)[m_numEntities] = CBody();
         std::get<std::vector<CColor>>(m_data)[m_numEntities] = CColor();
         std::get<std::vector<std::string>>(m_data)[m_numEntities] = tag;

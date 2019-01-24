@@ -24,7 +24,7 @@ int main()
 {
     // set up a new world that will be used for our simulation
     // let's pull one from the ExampleWorlds
-    auto world = ExampleWorlds::GetWorldECS(2);
+    auto world = ExampleWorlds::GetWorldECS(4);
 
     std::cout << "World Size: " << world.getEntities().size() << "\n";
 
