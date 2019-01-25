@@ -46,36 +46,44 @@ namespace ExampleWorlds
         return world;
     }
 
-    /*World GetGridWorld720(size_t skip)
+    World GetGridWorld720(size_t skip)
     {
         World world(1280, 720);
 
-        world.addRobot(Vec2(200, 180), 40, { 44, 160, 44, 255 });
-        world.getRobots()[0].addGridSensor(GridSensor(30, 50, 0));
-        world.getRobots()[0].addGridSensor(GridSensor(-30, 50, 0));
-        world.getRobots()[0].addGridSensor(GridSensor(0, 50, 0));
+        Entity robot1 = world.addEntity("robot");
+        robot1.addComponent<CTransform>(Vec2(200, 200));
+        robot1.addComponent<CCircleBody>(40);
+        robot1.addComponent<CCircleShape>(40);
+        robot1.addComponent<CColor>(0, 100, 200, 255);
 
-        world.addRobot(Vec2(200, 540), 40, { 200, 44, 44, 255 });
+        Entity robot2 = world.addEntity("robot");
+        robot2.addComponent<CTransform>(Vec2(200, 600));
+        robot2.addComponent<CCircleBody>(50);
+        robot2.addComponent<CCircleShape>(50);
+        robot2.addComponent<CColor>(44, 160, 44, 255);
 
         for (size_t i = 0; i < 80; i += skip)
         {
             for (size_t j = 0; j < 52; j += skip)
             {
-                Vec2 position = Vec2(400.0f + (double)i * 10, 100.0f + (double)j * 10);
-                double radius = skip * 4.0f;
-                std::array<uint8_t, 4> color = { 0, 100, 200, 255 };
-                world.addPuck(position, radius, { 0, 100, 200, 255 });
+                Entity puck = world.addEntity("puck");
+                puck.addComponent<CTransform>(Vec2(400.0 + i * 10, 100.0 + j * 10));
+                puck.addComponent<CCircleBody>(skip * 4.0);
+                puck.addComponent<CCircleShape>(skip * 4.0);
+                puck.addComponent<CColor>(200, 44, 44, 255);
             }
         }
 
-        world.addLine(Vec2(100, 260), Vec2(300, 260), 10);
-        world.addLine(Vec2(100, 360), Vec2(300, 360), 10);
-        world.addLine(Vec2(100, 460), Vec2(300, 460), 10);
+        // add some lines
+        for (size_t i = 0; i < 3; i++)
+        {
+            Entity line = world.addEntity("line");
+            line.addComponent<CLineBody>(Vec2(100, 300 + i * 100), Vec2(300, 300 + i * 100), 10);
+        }
 
-        world.setGrid(ExampleGrids::GetInverseCenterDistanceGrid(128, 72));
-
+        world.update();
         return world;
-    }*/
+    }
 
     World GetGetSquareWorld(Vec2 size, size_t numRobots, double robotSize, size_t numPucks, double puckSize)
     {

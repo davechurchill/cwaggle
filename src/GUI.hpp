@@ -28,32 +28,14 @@ class GUI
 
     std::vector<sf::RectangleShape> m_gridRectangles;
 
-    void init(World & world)
+    void init(const World & world)
     {
-        //m_sim.setWorld(world);
+        m_sim.setWorld(world);
         m_font.loadFromFile("fonts/cour.ttf");
         m_text.setFont(m_font);
         m_text.setCharacterSize(24);
         m_text.setPosition(5, 5);
         m_text.setFillColor(sf::Color::Yellow);
-
-        std::cout << world.getEntities().size() << "\n";
-        std::cout << m_sim.getWorld().getEntities().size() << "\n";
-
-        //// add the puck circle shapes
-        //for (auto & puck : m_sim.getWorld().getPucks())
-        //{
-        //    auto & circle = m_sim.getWorld().getCircles()[puck.bodyID()];
-        //    auto & shape = m_circleShapes[circle.id];
-
-        //    shape.setRadius((float)circle.r);
-        //    shape.setOrigin((float)circle.r, (float)circle.r);
-        //    shape.setPosition((float)circle.p.x, (float)circle.p.y);
-        //    shape.setOutlineThickness(0);
-
-        //    auto color = puck.color();
-        //    shape.setFillColor(sf::Color(color[0], color[1], color[2], color[3]));
-        //}
 
         // create the grid rectangle shapes
         auto & grid = m_sim.getWorld().getGrid();
@@ -100,7 +82,7 @@ class GUI
                 switch (event.key.code)
                 {
                     case sf::Keyboard::Escape: exit(0); break;
-                    /*case sf::Keyboard::Num1:   init(ExampleWorlds::GetGridWorld720(1)); break;
+                    case sf::Keyboard::Num1:   init(ExampleWorlds::GetGridWorld720(1)); break;
                     case sf::Keyboard::Num2:   init(ExampleWorlds::GetGridWorld720(2)); break;
                     case sf::Keyboard::Num3:   init(ExampleWorlds::GetGridWorld720(3)); break;
                     case sf::Keyboard::Num4:   init(ExampleWorlds::GetGridWorld720(4)); break;
@@ -108,7 +90,7 @@ class GUI
                     case sf::Keyboard::Num6:   init(ExampleWorlds::GetGridWorld720(6)); break;
                     case sf::Keyboard::Num7:   init(ExampleWorlds::GetGridWorld720(7)); break;
                     case sf::Keyboard::Num8:   init(ExampleWorlds::GetGridWorld720(8)); break;
-                    case sf::Keyboard::Num9:   init(ExampleWorlds::GetGridWorld720(9)); break;*/
+                    case sf::Keyboard::Num9:   init(ExampleWorlds::GetGridWorld720(9)); break;
                     case sf::Keyboard::D:      m_debug = !m_debug; break;
                     case sf::Keyboard::G:      m_grid = !m_grid; break;
                     case sf::Keyboard::S:      m_sensors = !m_sensors; break;
