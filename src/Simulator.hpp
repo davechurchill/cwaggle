@@ -131,7 +131,7 @@ class Simulator
             //}
             
             // if this circle hasn't moved, we don't need to check collisions for it
-            // if (!b1.moved) { continue; }
+            if (!t1.moved) { continue; }
 
             // step 2: check collisions of all circles against all other circles
             for (auto e2 : m_world.getEntities())
