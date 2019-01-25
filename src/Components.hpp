@@ -6,7 +6,7 @@
 
 #include "Vec2.hpp"
 
-class CTransform2
+class CTransform
 {
 public:
     
@@ -15,24 +15,20 @@ public:
     Vec2 a = { 0.0, 0.0 };
     bool moved = false;
 
-    CTransform2() {}
-    CTransform2(const Vec2 & pin) : p(pin) {}
+    CTransform() {}
+    CTransform(const Vec2 & pin) : p(pin) {}
 };
 
 class CBody
 {
 public:
-    Vec2 p = { 0.0, 0.0 };
-    Vec2 v = { 0.0, 0.0 };
-    Vec2 a = { 0.0, 0.0 };
     double r = 10;
     double m = 0;
-    bool moved = false;
     bool collided = false;
 
     CBody() {}
-    CBody(const Vec2 & pos, double radius)
-        : p(pos), r(radius), m(radius * 10) {}
+    CBody(double radius)
+        : r(radius), m(radius * 10) {}
 };
 
 class CColor

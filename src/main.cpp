@@ -9,24 +9,12 @@
 
 #include <iostream>
 
-//void benchmark()
-//{
-//    auto world = ExampleWorlds::GetGridWorld720(2);
-//    Simulator sim(world);
-//    for (size_t i = 0; i < 100000; i++)
-//    {
-//        if (i % 1000 == 0) { std::cout << i << "\n"; }
-//        sim.update();
-//    }
-//}
 
 int main()
 {
     // set up a new world that will be used for our simulation
     // let's pull one from the ExampleWorlds
-    auto world = ExampleWorlds::GetWorldECS(4);
-
-    std::cout << "World Size: " << world.getEntities().size() << "\n";
+    auto world = ExampleWorlds::GetWorldECS(2);
 
     // create a new simulator with the given world
     Simulator sim(world);
@@ -36,8 +24,6 @@ int main()
     // this is completely optional, simulation will run with no visualization
     // GUI can also be created at any time to start visualizing an ongoing simulation
     GUI gui(sim, 144);
-
-    std::cout << "CircleBody: " << sizeof(CircleBody) << "\n";
 
     // run the simulation and gui update() function in a loop
     while (true)

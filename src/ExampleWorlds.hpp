@@ -33,11 +33,13 @@ namespace ExampleWorlds
         WorldECS world(1920, 1080);
         
         Entity robot1 = world.addEntity("robot");
-        robot1.addComponent<CBody>(Vec2(200, 360), 50);
+        robot1.addComponent<CTransform>(Vec2(200, 360));
+        robot1.addComponent<CBody>(50);
         robot1.addComponent<CColor>(0, 100, 200, 255);
 
         Entity robot2 = world.addEntity("robot");
-        robot2.addComponent<CBody>(Vec2(200, 660), 50);
+        robot2.addComponent<CTransform>(Vec2(200, 600));
+        robot2.addComponent<CBody>(50);
         robot2.addComponent<CColor>(44, 160, 44, 255);
 
         for (size_t i = 0; i < 140; i += skip)
@@ -45,7 +47,8 @@ namespace ExampleWorlds
             for (size_t j = 0; j < 90; j += skip)
             {                
                 Entity puck = world.addEntity("puck");
-                puck.addComponent<CBody>(Vec2(400.0 + i * 10, 100.0 + j * 10), skip * 4.0);
+                puck.addComponent<CTransform>(Vec2(400.0 + i * 10, 100.0 + j * 10));
+                puck.addComponent<CBody>(skip * 4.0);
                 puck.addComponent<CColor>(200, 44, 44, 255);
             }
         }

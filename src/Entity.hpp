@@ -37,17 +37,17 @@ public:
     size_t id() const { return m_id; }
     bool isActive() 
     {
-        return std::get<std::vector<bool>>(EntityMemoryPool::Instance().getEntityData())[m_id];
+        return EntityMemoryPool::Instance().getData<bool>()[m_id];
     }
 
     void setActive(bool active)
     {
-        std::get<std::vector<bool>>(EntityMemoryPool::Instance().getEntityData())[m_id] = active;
+        EntityMemoryPool::Instance().getData<bool>()[m_id] = active;
     }
 
     std::string & tag()
     {
-        return std::get<std::vector<std::string>>(EntityMemoryPool::Instance().getEntityData())[m_id];
+        return EntityMemoryPool::Instance().getData<std::string>()[m_id];
     }
 /*
     template <typename T>
@@ -66,8 +66,8 @@ public:
     template<typename T>
     inline T & getComponent()
     {
-        std::vector<T> & vec = std::get<std::vector<T>>(EntityMemoryPool::Instance().getEntityData());
-        return vec[m_id];
+        static auto it = EntityMemoryPool::Instance().getData<T>().begin();
+        return *(it + m_id);
     }
 
     template<typename T>

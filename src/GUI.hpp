@@ -47,12 +47,13 @@ class GUI
         // add the robot circle shapes
         for (auto e : m_sim.getWorld().getEntities())
         {
+            auto & t = e.getComponent<CTransform>();
             auto & b = e.getComponent<CBody>();
             auto & shape = m_circleShapes[e.id()];
 
             shape.setRadius((float)b.r);
             shape.setOrigin((float)b.r, (float)b.r);
-            shape.setPosition((float)b.p.x, (float)b.p.y);
+            shape.setPosition((float)t.p.x, (float)t.p.y);
             shape.setOutlineThickness(0);
 
             auto & color = e.getComponent<CColor>();
@@ -142,7 +143,7 @@ class GUI
                     for (auto e : m_sim.getWorld().getEntities())
                     {
                         Vec2 mPos((double)event.mouseButton.x, (double)event.mouseButton.y);
-                        if (mPos.dist(e.getComponent<CBody>().p) < e.getComponent<CBody>().r)
+                        if (mPos.dist(e.getComponent<CTransform>().p) < e.getComponent<CBody>().r)
                         {
                             m_selected = e;
                             break;
@@ -174,7 +175,7 @@ class GUI
                     for (auto & e : m_sim.getWorld().getEntities())
                     {
                         Vec2 mPos((double)event.mouseButton.x, (double)event.mouseButton.y);
-                        if (mPos.dist(e.getComponent<CBody>().p) < e.getComponent<CBody>().r)
+                        if (mPos.dist(e.getComponent<CTransform>().p) < e.getComponent<CBody>().r)
                         {
                             m_shooting = e;
                             break;
@@ -195,7 +196,7 @@ class GUI
                 {
                     if (m_shooting.id() != 0)
                     {
-                        auto & t = m_shooting.getComponent<CBody>();
+                        auto & t = m_shooting.getComponent<CTransform>();
                         t.v.x = (t.p.x - m_mousePos.x) / 10.0f;
                         t.v.y = (t.p.y - m_mousePos.y) / 10.0f;
                         m_shooting = Entity();
@@ -212,7 +213,7 @@ class GUI
 
         if (m_selected.id() != 0)
         {
-            auto & t = m_selected.getComponent<CBody>();
+            auto & t = m_selected.getComponent<CTransform>();
             Vec2 diff(m_mousePos.x - t.p.x, m_mousePos.y - t.p.y);
             diff /= 10;
             t.v = diff;
@@ -261,24 +262,25 @@ class GUI
 
         for (auto e : m_sim.getWorld().getEntities())
         {
+            auto & t = e.getComponent<CTransform>();
             auto & b = e.getComponent<CBody>();
 
-            m_circleShapes[e.id()].setPosition((float)b.p.x, (float)b.p.y);
+            m_circleShapes[e.id()].setPosition((float)t.p.x, (float)t.p.y);
             m_window.draw(m_circleShapes[e.id()]);
 
             Vec2 velPoint;
-            double vLength = b.v.length();
+            double vLength = t.v.length();
             if (vLength == 0)
             {
-                velPoint = Vec2(b.p.x + b.r, b.p.y);
+                velPoint = Vec2(t.p.x + b.r, t.p.y);
                 continue;
             }
             else
             {
-                velPoint = b.p + b.v.normalize() * b.r;
+                velPoint = t.p + t.v.normalize() * b.r;
             }
 
-            drawLine(b.p, velPoint, sf::Color(255, 255, 255));
+            drawLine(t.p, velPoint, sf::Color(255, 255, 255));
         }
 
         // draw robot sensors
@@ -320,13 +322,13 @@ class GUI
         {
             for (auto & collision : m_sim.getCollisions())
             {
-                drawLine(collision.b1->p, collision.b2->p, sf::Color::Green);
+                drawLine(collision.e1.getComponent<CTransform>().p, collision.e2.getComponent<CTransform>().p, sf::Color::Green);
             }
         }
 
         if (m_shooting.id() != 0)
         {
-            drawLine(m_shooting.getComponent<CBody>().p, Vec2(m_mousePos.x, m_mousePos.y), sf::Color::Red);
+            drawLine(m_shooting.getComponent<CTransform>().p, Vec2(m_mousePos.x, m_mousePos.y), sf::Color::Red);
         }
 
         // draw score

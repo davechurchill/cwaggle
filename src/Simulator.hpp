@@ -14,8 +14,8 @@
 
 struct CollisionData
 {
-    CBody * b1;
-    CBody * b2;
+    Entity e1;
+    Entity e2;
 };
 
 class Simulator
@@ -52,13 +52,13 @@ class Simulator
         // apply acceleration, velocity to all circles
         for (auto e : m_world.getEntities())
         {
-            auto & b = e.getComponent<CBody>();
+            auto & t = e.getComponent<CTransform>();
 
-            if (b.v.length() < m_stoppingSpeed) { b.v = Vec2(0, 0); }
-            b.a = b.v * -m_deceleration;
-            b.p += b.v * m_timeStep; 
-            b.v += b.a * m_timeStep;
-            b.moved = fabs(b.v.x) > 0 || fabs(b.v.y) > 0;
+            if (t.v.length() < m_stoppingSpeed) { t.v = Vec2(0, 0); }
+            t.a = t.v * -m_deceleration;
+            t.p += t.v * m_timeStep; 
+            t.v += t.a * m_timeStep;
+            t.moved = fabs(t.v.x) > 0 || fabs(t.v.y) > 0;
         }
     }
 
@@ -74,16 +74,21 @@ class Simulator
         // so if a circle collided last frame, consider it to have moved
         for (auto e : m_world.getEntities())
         {
-            if (e.getComponent<CBody>().collided) { e.getComponent<CBody>().moved = true; }
+            if (e.getComponent<CBody>().collided) { e.getComponent<CTransform>().moved = true; }
             e.getComponent<CBody>().collided = false;
         }
 
-        size_t numEntities = m_world.getEntities().size();
-        auto & bodies = EntityMemoryPool::Instance().getBodies();
-        auto end = bodies.begin() + numEntities;
-        for (auto it1 = bodies.begin(); it1 != end; it1++)
+        auto & transforms   = EntityMemoryPool::Instance().getData<CTransform>();
+        auto & bodies       = EntityMemoryPool::Instance().getData<CBody>();
+        auto tIt            = transforms.begin();
+        auto bIt            = bodies.begin();
+
+        for (auto e1 : m_world.getEntities())
         {
-            auto & b1 = *it1;
+            //auto & t1 = e1.getComponent<CTransform>();
+            //auto & b1 = e1.getComponent<CBody>();
+            auto & t1 = *(tIt + e1.id());
+            auto & b1 = *(bIt + e1.id());
 
             // step 1: check collisions of all circles against all lines
             //for (auto & edge : m_world.getLines())
@@ -126,34 +131,37 @@ class Simulator
             //}
             
             // if this circle hasn't moved, we don't need to check collisions for it
-            if (!b1.moved) { continue; }
+            // if (!b1.moved) { continue; }
 
             // step 2: check collisions of all circles against all other circles
-            for (auto it2 = bodies.begin(); it2 != end; it2++)
+            for (auto e2 : m_world.getEntities())
             {
-                auto & b2 = *it2;
+                //auto & t2 = e2.getComponent<CTransform>();
+                //auto & b2 = e2.getComponent<CBody>();
+                auto & t2 = *(tIt + e2.id());
+                auto & b2 = *(bIt + e2.id());
 
-                if (b1.p.distSq(b2.p) > (b1.r + b2.r)*(b1.r + b2.r)) { continue; }
-                if (it1 == it2) { continue; }
+                if (t1.p.distSq(t2.p) > (b1.r + b2.r)*(b1.r + b2.r)) { continue; }
+                if (e1.id() == e2.id()) { continue; }
 
                 // calculate the actual distance and overlap between circles
-                double dist = b1.p.dist(b2.p);
+                double dist = t1.p.dist(t2.p);
                 double overlap = (b1.r + b2.r) - dist;
 
                 // circles overlap if the overlap is positive
                 if (overlap > m_overlapThreshold)
                 {
                     // record that a collision took place between these two objects
-                    m_collisions.push_back({ &b1, &b2 });
+                    m_collisions.push_back({ e1, e2 });
 
                     // calculate the static collision resolution (direct position modifier)
                     // scale how much we push each circle back in the static collision by mass ratio
-                    Vec2 delta1 = (b1.p - b2.p) / dist * overlap * (b2.m / (b1.m + b2.m));
-                    Vec2 delta2 = (b1.p - b2.p) / dist * overlap * (b1.m / (b1.m + b2.m));
+                    Vec2 delta1 = (t1.p - t2.p) / dist * overlap * (b2.m / (b1.m + b2.m));
+                    Vec2 delta2 = (t1.p - t2.p) / dist * overlap * (b1.m / (b1.m + b2.m));
 
                     // apply the static collision resolution and record collision
-                    b1.p += delta1; b1.collided = true;
-                    b2.p -= delta2; b2.collided = true;
+                    t1.p += delta1; b1.collided = true;
+                    t2.p -= delta2; b2.collided = true;
                 }
             }
             // wraparound behavior
@@ -163,32 +171,34 @@ class Simulator
             //if (c1.p.y >= m_world.height()) { c1.p.y -= m_world.height(); }
             
             // check for collisions with the bounds of the world
-            if (b1.p.x - b1.r < 0) { b1.p.x = b1.r; b1.collided = true; }
-            if (b1.p.y - b1.r < 0) { b1.p.y = b1.r; b1.collided = true; }
-            if (b1.p.x + b1.r > m_world.width()) { b1.p.x = m_world.width() - b1.r;  b1.collided = true; }
-            if (b1.p.y + b1.r > m_world.height()) { b1.p.y = m_world.height() - b1.r; b1.collided = true; }
+            if (t1.p.x - b1.r < 0) { t1.p.x = b1.r; b1.collided = true; }
+            if (t1.p.y - b1.r < 0) { t1.p.y = b1.r; b1.collided = true; }
+            if (t1.p.x + b1.r > m_world.width()) { t1.p.x = m_world.width() - b1.r;  b1.collided = true; }
+            if (t1.p.y + b1.r > m_world.height()) { t1.p.y = m_world.height() - b1.r; b1.collided = true; }
         }
 
         // step 3: calculate and apply dynamic collision resolution to any detected collisions
         for (auto & collision : m_collisions)
         {
-            CBody & b1 = *collision.b1;
-            CBody & b2 = *collision.b2;
+            auto & t1 = collision.e1.getComponent<CTransform>();
+            auto & t2 = collision.e2.getComponent<CTransform>();
+            auto & b1 = collision.e1.getComponent<CBody>();
+            auto & b2 = collision.e2.getComponent<CBody>();
 
             // normal between the circles
-            double dist = b1.p.dist(b2.p);
-            double nx = (b2.p.x - b1.p.x) / dist;
-            double ny = (b2.p.y - b1.p.y) / dist;
+            double dist = t1.p.dist(t2.p);
+            double nx = (t2.p.x - t1.p.x) / dist;
+            double ny = (t2.p.y - t1.p.y) / dist;
 
             // thank you wikipedia
             // https://en.wikipedia.org/wiki/Elastic_collision
-            double kx = (b1.v.x - b2.v.x);
-            double ky = (b1.v.y - b2.v.y);
+            double kx = (t1.v.x - t2.v.x);
+            double ky = (t1.v.y - t2.v.y);
             double p = 2.0f * (nx*kx + ny * ky) / (b1.m + b2.m);
-            b1.v.x -= p * b2.m * nx;
-            b1.v.y -= p * b2.m * ny;
-            b2.v.x += p * b1.m * nx;
-            b2.v.y += p * b1.m * ny;
+            t1.v.x -= p * b2.m * nx;
+            t1.v.y -= p * b2.m * ny;
+            t2.v.x += p * b1.m * nx;
+            t2.v.y += p * b1.m * ny;
         }
 
         // record the time that this collision calculation took

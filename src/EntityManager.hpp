@@ -29,12 +29,11 @@ class EntityManager
 
 public:
 
-    EntityManager::EntityManager(size_t maxEntities = 20000)
-        : m_entityPool(maxEntities)
+    EntityManager::EntityManager()
     {
-        m_entities.reserve(maxEntities);
-        m_entitiesToAdd.reserve(maxEntities);
-        m_entitiesToRemove.reserve(maxEntities);
+        m_entities.reserve(MaxEntities);
+        m_entitiesToAdd.reserve(MaxEntities);
+        m_entitiesToRemove.reserve(MaxEntities);
     }
 
     void EntityManager::update()
