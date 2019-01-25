@@ -83,7 +83,6 @@ class Simulator
         auto & bodies       = EntityMemoryPool::Instance().getData<CCircleBody>();
         auto tIt            = transforms.begin();
         auto bIt            = bodies.begin();
-        size_t numLines     = m_world.getEntities("line").size();
 
         for (auto e1 : m_world.getEntities())
         {
@@ -230,7 +229,7 @@ public:
 
     void setWorld(const World & world)
     {
-        //m_world = world;
+        m_world = world;
     }
 
     std::vector<CollisionData> & getCollisions()

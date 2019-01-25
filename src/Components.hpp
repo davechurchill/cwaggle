@@ -37,9 +37,9 @@ public:
     sf::CircleShape shape;
     CCircleShape() {}
     CCircleShape(double radius)
-        : shape(radius, 32)
+        : shape((float)radius, 32)
     {
-        shape.setOrigin(radius, radius);
+        shape.setOrigin((float)radius, (float)radius);
     }
 };
 
