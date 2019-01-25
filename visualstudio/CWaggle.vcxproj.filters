@@ -7,10 +7,6 @@
     <ClInclude Include="..\src\ExampleGrids.hpp" />
     <ClInclude Include="..\src\ExampleWorlds.hpp" />
     <ClInclude Include="..\src\GUI.hpp" />
-    <ClInclude Include="..\src\CircleBody.hpp" />
-    <ClInclude Include="..\src\LineBody.hpp" />
-    <ClInclude Include="..\src\Puck.hpp" />
-    <ClInclude Include="..\src\Robot.hpp" />
     <ClInclude Include="..\src\RobotAction.hpp" />
     <ClInclude Include="..\src\RobotControllers.hpp" />
     <ClInclude Include="..\src\Simulator.hpp" />
@@ -18,8 +14,6 @@
     <ClInclude Include="..\src\ValueGrid.hpp" />
     <ClInclude Include="..\src\Vec2.hpp" />
     <ClInclude Include="..\src\World.hpp" />
-    <ClInclude Include="..\src\GridSensor.hpp" />
-    <ClInclude Include="..\src\SensorTools.hpp" />
     <ClInclude Include="..\src\Components.hpp">
       <Filter>ecs</Filter>
     </ClInclude>
@@ -32,10 +26,22 @@
     <ClInclude Include="..\src\EntityMemoryPool.hpp">
       <Filter>ecs</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\PuckSensor.hpp">
+      <Filter>sensors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\SensorTools.hpp">
+      <Filter>sensors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\GridSensor.hpp">
+      <Filter>sensors</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ecs">
       <UniqueIdentifier>{be3303c3-4066-4150-a77d-96d61ef6be12}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sensors">
+      <UniqueIdentifier>{5f2dbf19-9f22-4de4-b843-4976e29db089}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

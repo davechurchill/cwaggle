@@ -5,12 +5,10 @@
 #include "Entity.hpp"
 #include "EntityMemoryPool.hpp"
 
-typedef std::vector<Entity> EntityVec;
-typedef std::map<std::string, EntityVec> EntityMap;
+typedef std::map<std::string, std::vector<Entity>> EntityMap;
 
 class EntityManager
 {
-    EntityMemoryPool    m_entityPool;
     std::vector<Entity> m_entities;
     std::vector<Entity> m_entitiesToAdd;
     std::vector<Entity> m_entitiesToRemove;
@@ -26,7 +24,6 @@ class EntityManager
             [](Entity entity) { return !entity.isActive(); }), vec.end());
     }
     
-
 public:
 
     EntityManager::EntityManager()
@@ -49,7 +46,8 @@ public:
                 // add it to the entity map in the correct place
                 // map[key] will create an element at 'key' if it does not already exist
                 //          therefore we are not in danger of adding to a vector that doesn't exist
-                m_entityMap[e.tag()].push_back(e);
+                const std::string & tag = e.tag();
+                m_entityMap[tag].push_back(e);
             }
 
             // clear the temporary vector since we have added everything
@@ -74,13 +72,13 @@ public:
 
     Entity EntityManager::addEntity(const std::string & tag)
     {
-        auto newEntityPtr = m_entityPool.addEntity(tag);
+        Entity e = EntityMemoryPool::Instance().addEntity(tag);
 
         // add it to the vector of entities that will be added on next update() call
-        m_entities.push_back(newEntityPtr);
+        m_entitiesToAdd.push_back(e);
 
         // return the pointer to the entity
-        return newEntityPtr;
+        return e;
     }
 
     void EntityManager::destroyEntity(Entity entity)
@@ -89,12 +87,12 @@ public:
         m_entitiesToRemove.push_back(entity);
     }
 
-    EntityVec & EntityManager::getEntities()
+    std::vector<Entity> & EntityManager::getEntities()
     {
         return m_entities;
     }
 
-    EntityVec & EntityManager::getEntities(const std::string & tag)
+    std::vector<Entity> & EntityManager::getEntities(const std::string & tag)
     {
         // return the vector in the map where all the entities with the same tag live
         return m_entityMap[tag];

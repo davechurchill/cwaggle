@@ -7,8 +7,6 @@
 
 class EntityManager;
 
-const size_t MaxComponents = 32;
-
 inline size_t GetComponentTypeID()
 {
     static size_t lastID = 0;
@@ -32,33 +30,51 @@ class Entity
 
 public:
 
-    Entity(const size_t id = 0) : m_id(id) {}
+    Entity(const size_t id = (size_t)-1) : m_id(id) {}
 
-    size_t id() const { return m_id; }
+    size_t id() const 
+    { 
+        return m_id; 
+    }
+
+    bool operator == (Entity rhs) const
+    {
+        return m_id == rhs.m_id;
+    }
+
+    bool operator != (Entity rhs) const
+    {
+        return !(*this == rhs);
+    }
+
     bool isActive() 
     {
-        return EntityMemoryPool::Instance().getData<bool>()[m_id];
+        return EntityMemoryPool::Instance().getActive()[m_id];
     }
 
     void setActive(bool active)
     {
-        EntityMemoryPool::Instance().getData<bool>()[m_id] = active;
+        EntityMemoryPool::Instance().getActive()[m_id] = active;
     }
 
-    std::string & tag()
+    const std::string & tag() const
     {
-        return EntityMemoryPool::Instance().getData<std::string>()[m_id];
+        auto & instance = EntityMemoryPool::Instance();
+        auto & tags = instance.getTags();
+        auto & tag = tags[m_id];
+        return tag;
     }
-/*
+
     template <typename T>
-    inline bool hasComponent() const
+    inline bool hasComponent()
     {
-        return m_hasComponent[GetComponentTypeID<T>()];
-    }*/
+        return getComponent<std::bitset<MaxComponents>>()[GetComponentTypeID<T>()];
+    }
 
     template <typename T, typename... TArgs>
     inline T & addComponent(TArgs&&... mArgs)
     {
+        getComponent<std::bitset<MaxComponents>>()[GetComponentTypeID<T>()] = true;
         getComponent<T>() = T(std::forward<TArgs>(mArgs)...);
         return getComponent<T>();
     }
@@ -73,7 +89,7 @@ public:
     template<typename T>
     inline void removeComponent()
     {
-        //m_hasComponent[GetComponentTypeID<T>()] = false;
+        getComponent<std::bitset<MaxComponents>>()[GetComponentTypeID<T>()] = false;
     }
 };
 

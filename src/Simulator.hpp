@@ -6,21 +6,20 @@
 #include <algorithm>
 
 #include "Vec2.hpp"
-#include "CircleBody.hpp"
-#include "Robot.hpp"
-#include "Puck.hpp"
 #include "Timer.hpp"
 #include "World.hpp"
 
 struct CollisionData
 {
-    Entity e1;
-    Entity e2;
+    CTransform * t1;
+    CTransform * t2;
+    CCircleBody * b1;
+    CCircleBody * b2;
 };
 
 class Simulator
 {
-    WorldECS m_world;
+    World m_world;
 
     // physics configuration
     double m_timeStep           = 1.0;  // time step per update call
@@ -33,7 +32,8 @@ class Simulator
     double m_computeTimeMax     = 0;    // the max CPU time of collisions since init
 
     std::vector<CollisionData>  m_collisions;
-    std::vector<CircleBody>     m_fakeBodies;
+    std::vector<CTransform>    m_fakeTransforms;
+    std::vector<CCircleBody>    m_fakeBodies;
 
     void movement()
     {
@@ -68,20 +68,22 @@ class Simulator
         timer.start();
         m_collisions.clear();
         m_fakeBodies.clear();
+        m_fakeTransforms.clear();
 
         // we can skip collision checking for any circle that hasn't moved
         // static resolution doesn't alter speed, so movement not recorded
         // so if a circle collided last frame, consider it to have moved
         for (auto e : m_world.getEntities())
         {
-            if (e.getComponent<CBody>().collided) { e.getComponent<CTransform>().moved = true; }
-            e.getComponent<CBody>().collided = false;
+            if (e.getComponent<CCircleBody>().collided) { e.getComponent<CTransform>().moved = true; }
+            e.getComponent<CCircleBody>().collided = false;
         }
 
         auto & transforms   = EntityMemoryPool::Instance().getData<CTransform>();
-        auto & bodies       = EntityMemoryPool::Instance().getData<CBody>();
+        auto & bodies       = EntityMemoryPool::Instance().getData<CCircleBody>();
         auto tIt            = transforms.begin();
         auto bIt            = bodies.begin();
+        size_t numLines     = m_world.getEntities("line").size();
 
         for (auto e1 : m_world.getEntities())
         {
@@ -91,44 +93,46 @@ class Simulator
             auto & b1 = *(bIt + e1.id());
 
             // step 1: check collisions of all circles against all lines
-            //for (auto & edge : m_world.getLines())
-            //{
-            //    double lineX1 = edge.e.x - edge.s.x;
-            //    double lineY1 = edge.e.y - edge.s.y;
-            //    double lineX2 = c1.p.x - edge.s.x;
-            //    double lineY2 = c1.p.y - edge.s.y;
+            for (auto & e : m_world.getEntities("line"))
+            {
+                auto & edge = e.getComponent<CLineBody>();
 
-            //    double edgeLength = lineX1 * lineX1 + lineY1 * lineY1;
-            //    double dotProd = lineX1 * lineX2 + lineY1 * lineY2;
-            //    double t = std::max(0.0, std::min(edgeLength, dotProd)) / edgeLength;
+                double lineX1 = edge.e.x - edge.s.x;
+                double lineY1 = edge.e.y - edge.s.y;
+                double lineX2 = t1.p.x - edge.s.x;
+                double lineY2 = t1.p.y - edge.s.y;
 
-            //    // find the closest point on the line to the circle and the distance to it
-            //    Vec2 closestPoint(edge.s.x + t * lineX1, edge.s.y + t * lineY1);
-            //    double distance = closestPoint.dist(c1.p);
+                double edgeLength = lineX1 * lineX1 + lineY1 * lineY1;
+                double dotProd = lineX1 * lineX2 + lineY1 * lineY2;
+                double t = std::max(0.0, std::min(edgeLength, dotProd)) / edgeLength;
 
-            //    // pretend the closest point on the line is a circle and check collision
-            //    // calculate the overlap between the circle and that fake circle
-            //    double overlap = c1.r + edge.r - distance;
+                // find the closest point on the line to the circle and the distance to it
+                Vec2 closestPoint(edge.s.x + t * lineX1, edge.s.y + t * lineY1);
+                double distance = closestPoint.dist(t1.p);
 
-            //    // if the circle and the line overlap
-            //    if (overlap > m_overlapThreshold)
-            //    {
-            //        // create a fake circlebody to handle physics
-            //        m_fakeBodies.emplace_back(CircleBody(closestPoint, edge.r, m_fakeBodies.size()));
-            //        auto & body = m_fakeBodies.back();
-            //        body.v = c1.v * -1.0;
+                // pretend the closest point on the line is a circle and check collision
+                // calculate the overlap between the circle and that fake circle
+                double overlap = b1.r + edge.r - distance;
 
-            //        // add a collision between the circle and the fake circle
-            //        // this will later be resolved in the dynamic collision resolution
-            //        m_collisions.push_back({ &c1, &body });
+                // if the circle and the line overlap
+                if (overlap > m_overlapThreshold)
+                {
+                    // create a fake circlebody to handle physics
+                    m_fakeBodies.emplace_back(CCircleBody(b1.r));
+                    m_fakeTransforms.emplace_back(CTransform(closestPoint));
+                    m_fakeTransforms.back().v = t1.v * -1.0;
 
-            //        // resolve the static collision by pushing circle away from line
-            //        // lines assume infinite mass and do not get moved
-            //        c1.p.x += overlap * (c1.p.x - body.p.x) / distance;
-            //        c1.p.y += overlap * (c1.p.y - body.p.y) / distance;
-            //        c1.collided = true;
-            //    }
-            //}
+                    // add a collision between the circle and the fake circle
+                    // this will later be resolved in the dynamic collision resolution
+                    m_collisions.push_back({ &t1, &m_fakeTransforms.back(), &b1, &m_fakeBodies.back() });
+
+                    // resolve the static collision by pushing circle away from line
+                    // lines assume infinite mass and do not get moved
+                    t1.p.x += overlap * (t1.p.x - m_fakeTransforms.back().p.x) / distance;
+                    t1.p.y += overlap * (t1.p.y - m_fakeTransforms.back().p.y) / distance;
+                    b1.collided = true;
+                }
+            }
             
             // if this circle hasn't moved, we don't need to check collisions for it
             if (!t1.moved) { continue; }
@@ -152,7 +156,7 @@ class Simulator
                 if (overlap > m_overlapThreshold)
                 {
                     // record that a collision took place between these two objects
-                    m_collisions.push_back({ e1, e2 });
+                    m_collisions.push_back({ &t1, &t2, &b1, &b2 });
 
                     // calculate the static collision resolution (direct position modifier)
                     // scale how much we push each circle back in the static collision by mass ratio
@@ -180,25 +184,25 @@ class Simulator
         // step 3: calculate and apply dynamic collision resolution to any detected collisions
         for (auto & collision : m_collisions)
         {
-            auto & t1 = collision.e1.getComponent<CTransform>();
-            auto & t2 = collision.e2.getComponent<CTransform>();
-            auto & b1 = collision.e1.getComponent<CBody>();
-            auto & b2 = collision.e2.getComponent<CBody>();
+            auto t1 = collision.t1;
+            auto t2 = collision.t2;
+            auto b1 = collision.b1;
+            auto b2 = collision.b2;
 
             // normal between the circles
-            double dist = t1.p.dist(t2.p);
-            double nx = (t2.p.x - t1.p.x) / dist;
-            double ny = (t2.p.y - t1.p.y) / dist;
+            double dist = t1->p.dist(t2->p);
+            double nx = (t2->p.x - t1->p.x) / dist;
+            double ny = (t2->p.y - t1->p.y) / dist;
 
             // thank you wikipedia
             // https://en.wikipedia.org/wiki/Elastic_collision
-            double kx = (t1.v.x - t2.v.x);
-            double ky = (t1.v.y - t2.v.y);
-            double p = 2.0f * (nx*kx + ny * ky) / (b1.m + b2.m);
-            t1.v.x -= p * b2.m * nx;
-            t1.v.y -= p * b2.m * ny;
-            t2.v.x += p * b1.m * nx;
-            t2.v.y += p * b1.m * ny;
+            double kx = (t1->v.x - t2->v.x);
+            double ky = (t1->v.y - t2->v.y);
+            double p = 2.0f * (nx*kx + ny * ky) / (b1->m + b2->m);
+            t1->v.x -= p * b2->m * nx;
+            t1->v.y -= p * b2->m * ny;
+            t2->v.x += p * b1->m * nx;
+            t2->v.y += p * b1->m * ny;
         }
 
         // record the time that this collision calculation took
@@ -208,21 +212,23 @@ class Simulator
 
 public:
 
-    Simulator(const WorldECS & world)
+    Simulator(const World & world)
         : m_world(world)
     {
-        m_collisions.reserve(1000);
-        m_fakeBodies.reserve(10000);
+        m_collisions.reserve(MaxEntities);
+        m_fakeBodies.reserve(MaxEntities);
+        m_fakeTransforms.reserve(MaxEntities);
     }
 
     void update(double timeStep = 1.0)
     {
         m_timeStep = timeStep;
+        m_world.update();
         movement();
         collisions();
     }
 
-    void setWorld(const WorldECS & world)
+    void setWorld(const World & world)
     {
         //m_world = world;
     }
@@ -242,7 +248,7 @@ public:
         return m_computeTimeMax;
     }
 
-    WorldECS & getWorld()
+    World & getWorld()
     {
         return m_world;
     }

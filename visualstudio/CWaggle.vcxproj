@@ -21,11 +21,7 @@
     <ClInclude Include="..\src\ExampleGrids.hpp" />
     <ClInclude Include="..\src\ExampleWorlds.hpp" />
     <ClInclude Include="..\src\GUI.hpp" />
-    <ClInclude Include="..\src\CircleBody.hpp" />
-    <ClInclude Include="..\src\LineBody.hpp" />
-    <ClInclude Include="..\src\Puck.hpp" />
     <ClInclude Include="..\src\PuckSensor.hpp" />
-    <ClInclude Include="..\src\Robot.hpp" />
     <ClInclude Include="..\src\RobotAction.hpp" />
     <ClInclude Include="..\src\RobotControllers.hpp" />
     <ClInclude Include="..\src\SensorTools.hpp" />

@@ -14,7 +14,8 @@ int main()
 {
     // set up a new world that will be used for our simulation
     // let's pull one from the ExampleWorlds
-    auto world = ExampleWorlds::GetWorldECS(2);
+    //auto world = ExampleWorlds::GetGridWorld1080(6);
+    auto world = ExampleWorlds::GetGetSquareWorld(Vec2(800, 800), 20, 10, 250, 10);
 
     // create a new simulator with the given world
     Simulator sim(world);
@@ -45,9 +46,9 @@ int main()
         // call the world physics simulation update
         // parameter = how much sim time should pass (default 1.0)
         // the smaller the time update, the more accurate/smooth the simulation
-        for (size_t i = 0; i < 1; i++)
+        for (size_t i = 0; i < 10; i++)
         {
-            sim.update(1);
+            sim.update(0.1);
         }
         
         // if a gui exists, call for its display to update

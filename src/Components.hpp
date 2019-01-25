@@ -19,17 +19,43 @@ public:
     CTransform(const Vec2 & pin) : p(pin) {}
 };
 
-class CBody
+class CCircleBody
 {
 public:
     double r = 10;
     double m = 0;
-    bool collided = false;
+    bool collided = true;
 
-    CBody() {}
-    CBody(double radius)
-        : r(radius), m(radius * 10) {}
+    CCircleBody() {}
+    CCircleBody(double radius)
+        : r(radius), m(radius * 10) { }
 };
+
+class CCircleShape
+{
+public:
+    sf::CircleShape shape;
+    CCircleShape() {}
+    CCircleShape(double radius)
+        : shape(radius, 32)
+    {
+        shape.setOrigin(radius, radius);
+    }
+};
+
+class CLineBody
+{
+public:
+    Vec2 s;
+    Vec2 e;
+    double r = 1.0;
+
+    CLineBody() {}
+
+    CLineBody(Vec2 start, Vec2 end, double radius)
+        : s(start), e(end), r(radius) { }
+};
+ 
 
 class CColor
 {

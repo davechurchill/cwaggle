@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Simulator.hpp"
-#include "Robot.hpp"
 #include "RobotAction.hpp"
 
 namespace RobotControllers

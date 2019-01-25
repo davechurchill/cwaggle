@@ -5,30 +5,35 @@
 #include <vector>
 
 const size_t MaxEntities = 20000;
+const size_t MaxComponents = 32;
 
 typedef std::tuple <
-    std::array<CTransform, MaxEntities>,
-    std::array<CBody, MaxEntities>,
-    std::array<CColor, MaxEntities>,
-    std::array<std::string, MaxEntities>,
-    std::array<bool, MaxEntities>
+    std::vector<CTransform>,
+    std::vector<CCircleBody>,
+    std::vector<CCircleShape>,
+    std::vector<CLineBody>,
+    std::vector<CColor>,
+    std::vector<std::bitset<MaxComponents>>
 > EntityData;
 
 class EntityMemoryPool
 {
-    friend class EntityManager;
-
-    EntityData  * m_data;
+    EntityData  m_data;
     size_t      m_numEntities = 0;
+
+    std::vector<std::string> m_tags;
+    std::vector<bool> m_active;
 
     EntityMemoryPool()
     {
-        m_data = new EntityData();
-        //std::get<std::vector<CTransform>>(m_data).resize(size);
-        //std::get<std::vector<CBody>>(m_data).resize(size);
-        //std::get<std::vector<CColor>>(m_data).resize(size);
-        //std::get<std::vector<std::string>>(m_data).resize(size);
-        //std::get<std::vector<bool>>(m_data).resize(size, false);
+        getData<CTransform>().resize(MaxEntities);
+        getData<CCircleBody>().resize(MaxEntities);
+        getData<CCircleShape>().resize(MaxEntities);
+        getData<CLineBody>().resize(MaxEntities);
+        getData<CColor>().resize(MaxEntities);
+        getData<std::bitset<MaxComponents>>().resize(MaxEntities);
+        m_tags.resize(MaxEntities);
+        m_active.resize(MaxEntities);
     }
 
 public:
@@ -41,19 +46,33 @@ public:
 
     inline size_t EntityMemoryPool::addEntity(const std::string & tag)
     {
-        getData<CTransform>()[m_numEntities] = CTransform();
-        getData<CBody>()[m_numEntities] = CBody();
-        getData<CColor>()[m_numEntities] = CColor();
-        getData<std::string>()[m_numEntities] = tag;
-        getData<bool>()[m_numEntities] = true;
+        getData<CTransform>()[m_numEntities] = {};
+        getData<CCircleBody>()[m_numEntities] = {};
+        getData<CCircleShape>()[m_numEntities] = {};
+        getData<CLineBody>()[m_numEntities] = {};
+        getData<CColor>()[m_numEntities] = {};
+        getData<std::bitset<MaxComponents>>()[m_numEntities] = {};
+        m_tags[m_numEntities] = tag;
+        m_active[m_numEntities] = true;
 
         // return the pointer to the entity
         return m_numEntities++;
     }
 
-    template <typename T>
-    inline std::array<T, MaxEntities> & getData()
+    inline std::vector<bool> & getActive()
     {
-        return std::get<std::array<T, MaxEntities>>(*m_data);
+        return m_active;
+    }
+
+    inline const std::vector<std::string> & getTags() const
+    {
+        return m_tags;
+    }
+
+    template <typename T>
+    inline std::vector<T> & getData()
+    {
+        return std::get<std::vector<T>>(m_data);
     }
 };
+
