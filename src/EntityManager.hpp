@@ -16,7 +16,7 @@ class EntityManager
     size_t              m_totalEntities = 0;
 
     // helper function to avoid repeated code
-    void EntityManager::removeDeadEntities(std::vector<Entity> & vec)
+    void removeDeadEntities(std::vector<Entity> & vec)
     {
         // use std::remove_if to remove dead entities
         // probably not the fastest solution, but it is safe
@@ -26,14 +26,14 @@ class EntityManager
     
 public:
 
-    EntityManager::EntityManager()
+    EntityManager()
     {
         m_entities.reserve(MaxEntities);
         m_entitiesToAdd.reserve(MaxEntities);
         m_entitiesToRemove.reserve(MaxEntities);
     }
 
-    void EntityManager::update()
+    void update()
     {
         if (m_entitiesToAdd.size() > 0)
         {
@@ -70,7 +70,7 @@ public:
         }
     }
 
-    Entity EntityManager::addEntity(const std::string & tag)
+    Entity addEntity(const std::string & tag)
     {
         Entity e = EntityMemoryPool::Instance().addEntity(tag);
 
@@ -81,18 +81,18 @@ public:
         return e;
     }
 
-    void EntityManager::destroyEntity(Entity entity)
+    void destroyEntity(Entity entity)
     {
         entity.setActive(false);
         m_entitiesToRemove.push_back(entity);
     }
 
-    std::vector<Entity> & EntityManager::getEntities()
+    std::vector<Entity> & getEntities()
     {
         return m_entities;
     }
 
-    std::vector<Entity> & EntityManager::getEntities(const std::string & tag)
+    std::vector<Entity> & getEntities(const std::string & tag)
     {
         // return the vector in the map where all the entities with the same tag live
         return m_entityMap[tag];

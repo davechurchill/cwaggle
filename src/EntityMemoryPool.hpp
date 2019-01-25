@@ -44,7 +44,7 @@ public:
         return instance;
     }
 
-    inline size_t EntityMemoryPool::addEntity(const std::string & tag)
+    inline size_t addEntity(const std::string & tag)
     {
         getData<CTransform>()[m_numEntities] = {};
         getData<CCircleBody>()[m_numEntities] = {};
