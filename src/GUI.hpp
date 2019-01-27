@@ -295,7 +295,6 @@ class GUI
             }
         }
 
-        std::cout << m_sim.getWorld().getEntities("line").size() << "\n";
         for (auto & e : m_sim.getWorld().getEntities("line"))
         {
             auto & line = e.getComponent<CLineBody>();
