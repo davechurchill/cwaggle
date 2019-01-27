@@ -1,9 +1,10 @@
 #pragma once
 
 #include "Simulator.hpp"
-#include "RobotAction.hpp"
+#include "EntityControllers.hpp"
 #include "World.hpp"
 #include "ExampleGrids.hpp"
+#include "Sensors.h"
 
 namespace ExampleWorlds
 {
@@ -13,14 +14,14 @@ namespace ExampleWorlds
         
         Entity robot1 = world.addEntity("robot");
         robot1.addComponent<CTransform>(Vec2(200, 300));
-        robot1.addComponent<CCircleBody>(50);
-        robot1.addComponent<CCircleShape>(50);
+        robot1.addComponent<CCircleBody>(30);
+        robot1.addComponent<CCircleShape>(30);
         robot1.addComponent<CColor>(0, 100, 200, 255);
 
         Entity robot2 = world.addEntity("robot");
         robot2.addComponent<CTransform>(Vec2(200, 800));
-        robot2.addComponent<CCircleBody>(50);
-        robot2.addComponent<CCircleShape>(50);
+        robot2.addComponent<CCircleBody>(30);
+        robot2.addComponent<CCircleShape>(30);
         robot2.addComponent<CColor>(44, 160, 44, 255);
 
         for (size_t i = 0; i < 140; i += skip)
@@ -55,6 +56,18 @@ namespace ExampleWorlds
         robot1.addComponent<CCircleBody>(40);
         robot1.addComponent<CCircleShape>(40);
         robot1.addComponent<CColor>(0, 100, 200, 255);
+        robot1.addComponent<CController>(std::make_shared<EntityController_Turn>(2, 0.01));
+        
+        auto & sensors = robot1.addComponent<CSensorArray>();
+        sensors.gridSensors.push_back(GridSensor(robot1, 45, 50));
+        sensors.gridSensors.push_back(GridSensor(robot1, 0, 50));
+        sensors.gridSensors.push_back(GridSensor(robot1, -45, 50));
+        sensors.puckSensors.push_back(PuckSensor(robot1, -30, 80, 40));
+        sensors.puckSensors.push_back(PuckSensor(robot1,  30, 80, 40));
+        sensors.puckSensors.push_back(PuckSensor(robot1, 65, 130, 40));
+        sensors.puckSensors.push_back(PuckSensor(robot1, -65, 130, 40));
+        sensors.obstacleSensors.push_back(ObstacleSensor(robot1, 45, 50, 10));
+        sensors.obstacleSensors.push_back(ObstacleSensor(robot1, -45, 50, 10));
 
         Entity robot2 = world.addEntity("robot");
         robot2.addComponent<CTransform>(Vec2(200, 600));
@@ -98,6 +111,20 @@ namespace ExampleWorlds
             robot.addComponent<CCircleBody>(robotSize);
             robot.addComponent<CCircleShape>(robotSize);
             robot.addComponent<CColor>(0, 100, 200, 255);
+
+            robot.addComponent<CController>(std::make_shared<EntityController_Turn>(0.5, 0.01));
+
+            auto & sensors = robot.addComponent<CSensorArray>();
+            sensors.gridSensors.push_back(GridSensor(robot, 45, robotSize + 4));
+            sensors.gridSensors.push_back(GridSensor(robot, 0, robotSize + 4));
+            sensors.gridSensors.push_back(GridSensor(robot, -45, robotSize + 4));
+            sensors.puckSensors.push_back(PuckSensor(robot, -45, robotSize * 3, robotSize * 2));
+            sensors.puckSensors.push_back(PuckSensor(robot, 45, robotSize * 3, robotSize * 2));
+            sensors.puckSensors.push_back(PuckSensor(robot, 70, robotSize * 6.5, robotSize * 2));
+            sensors.puckSensors.push_back(PuckSensor(robot, -70, robotSize * 6.5, robotSize * 2));
+            sensors.obstacleSensors.push_back(ObstacleSensor(robot, 45, robotSize * 2, robotSize));
+            sensors.obstacleSensors.push_back(ObstacleSensor(robot, -45, robotSize * 2, robotSize));
+
         }
 
         // add the innie robots
@@ -109,6 +136,19 @@ namespace ExampleWorlds
             robot.addComponent<CCircleBody>(robotSize);
             robot.addComponent<CCircleShape>(robotSize);
             robot.addComponent<CColor>(44, 160, 44, 255);
+
+            robot.addComponent<CController>(std::make_shared<EntityController_Turn>(0.5, -0.005));
+
+            auto & sensors = robot.addComponent<CSensorArray>();
+            sensors.gridSensors.push_back(GridSensor(robot, 45, robotSize + 4));
+            sensors.gridSensors.push_back(GridSensor(robot, 0, robotSize + 4));
+            sensors.gridSensors.push_back(GridSensor(robot, -45, robotSize + 4));
+            sensors.puckSensors.push_back(PuckSensor(robot, -45, robotSize * 3, robotSize * 2));
+            sensors.puckSensors.push_back(PuckSensor(robot, 45, robotSize * 3, robotSize * 2));
+            sensors.puckSensors.push_back(PuckSensor(robot, 70, robotSize * 6.5, robotSize * 2));
+            sensors.puckSensors.push_back(PuckSensor(robot, -70, robotSize * 6.5, robotSize * 2));
+            sensors.obstacleSensors.push_back(ObstacleSensor(robot, 45, robotSize * 2, robotSize));
+            sensors.obstacleSensors.push_back(ObstacleSensor(robot, -45, robotSize * 2, robotSize));
         }
 
         // add the pucks

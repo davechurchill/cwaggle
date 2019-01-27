@@ -8,6 +8,7 @@
 #include "Vec2.hpp"
 #include "Timer.hpp"
 #include "World.hpp"
+#include "Components.hpp"
 
 struct CollisionData
 {
@@ -17,37 +18,42 @@ struct CollisionData
     CCircleBody * b2;
 };
 
+typedef std::vector<Entity> EntityVec;
+
 class Simulator
 {
     World m_world;
 
     // physics configuration
-    double m_timeStep           = 1.0;  // time step per update call
-    double m_overlapThreshold   = 0.1;  // allow overlap of this amount without resolution
-    double m_deceleration       = 0.2;  // deceleration multiplier, replace with friction
-    double m_stoppingSpeed      = 0.001; // stop an object if moving less than this speed
+    double m_timeStep = 1.0;  // time step per update call
+    double m_overlapThreshold = 0.1;  // allow overlap of this amount without resolution
+    double m_deceleration = 0.2;  // deceleration multiplier, replace with friction
+    double m_stoppingSpeed = 0.001; // stop an object if moving less than this speed
 
     // time keeping
-    double m_computeTime        = 0;    // the CPU time of the last frame of collisions
-    double m_computeTimeMax     = 0;    // the max CPU time of collisions since init
+    double m_computeTime = 0;    // the CPU time of the last frame of collisions
+    double m_computeTimeMax = 0;    // the max CPU time of collisions since init
 
     std::vector<CollisionData>  m_collisions;
-    std::vector<CTransform>    m_fakeTransforms;
+    std::vector<CTransform>     m_fakeTransforms;
     std::vector<CCircleBody>    m_fakeBodies;
+
+    std::vector<Entity>         m_collisionEntities;
 
     void movement()
     {
-        // update robot body's velocity from its heading and angle
-        //for (auto & robot : m_world.getEntities())
-        //{
-        //    if (!robot.doAction()) { continue; }
+        // update entity's velocity from its heading and angle
+        for (auto & entity : m_world.getEntities("robot"))
+        { 
+            if (!entity.hasComponent<CSteer>()) { continue; }
 
-        //    auto & body = m_world.getCircles()[robot.bodyID()];
+            auto & transform = entity.getComponent<CTransform>();
+            auto & steer     = entity.getComponent<CSteer>();
 
-        //    // update the body's velocity based on angle and speed
-        //    body.v.x = robot.speed() * cos(robot.angle());
-        //    body.v.y = robot.speed() * sin(robot.angle());
-        //}
+            // update the entity velocity based on angle and speed
+            transform.v.x = steer.speed * cos(steer.angle);
+            transform.v.y = steer.speed * sin(steer.angle);
+        }
 
         // apply acceleration, velocity to all circles
         for (auto e : m_world.getEntities())
@@ -56,7 +62,7 @@ class Simulator
 
             if (t.v.length() < m_stoppingSpeed) { t.v = Vec2(0, 0); }
             t.a = t.v * -m_deceleration;
-            t.p += t.v * m_timeStep; 
+            t.p += t.v * m_timeStep;
             t.v += t.a * m_timeStep;
             t.moved = fabs(t.v.x) > 0 || fabs(t.v.y) > 0;
         }
@@ -84,7 +90,7 @@ class Simulator
         auto tIt            = transforms.begin();
         auto bIt            = bodies.begin();
 
-        for (auto e1 : m_world.getEntities())
+        for (auto e1 : m_collisionEntities)
         {
             //auto & t1 = e1.getComponent<CTransform>();
             //auto & b1 = e1.getComponent<CBody>();
@@ -137,7 +143,7 @@ class Simulator
             if (!t1.moved) { continue; }
 
             // step 2: check collisions of all circles against all other circles
-            for (auto e2 : m_world.getEntities())
+            for (auto e2 : m_collisionEntities)
             {
                 //auto & t2 = e2.getComponent<CTransform>();
                 //auto & b2 = e2.getComponent<CBody>();
@@ -209,6 +215,11 @@ class Simulator
         m_computeTimeMax = m_computeTime > m_computeTimeMax ? m_computeTime : m_computeTimeMax;
     }
 
+    void appendTo(std::vector<Entity> & src, std::vector<Entity> & dest)
+    {
+        dest.insert(dest.end(), src.begin(), src.end());
+    }
+
 public:
 
     Simulator(const World & world)
@@ -217,12 +228,22 @@ public:
         m_collisions.reserve(MaxEntities);
         m_fakeBodies.reserve(MaxEntities);
         m_fakeTransforms.reserve(MaxEntities);
+        m_collisionEntities.reserve(MaxEntities);
     }
 
     void update(double timeStep = 1.0)
     {
         m_timeStep = timeStep;
+
+        // update the world so entities get managed
         m_world.update();
+
+        // populate the vector of entities we care about colliding
+        m_collisionEntities.clear();
+        appendTo(m_world.getEntities("robot"), m_collisionEntities);
+        appendTo(m_world.getEntities("puck"), m_collisionEntities);
+
+        // do the actual simulation
         movement();
         collisions();
     }

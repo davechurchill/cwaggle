@@ -12,6 +12,9 @@ typedef std::tuple <
     std::vector<CCircleBody>,
     std::vector<CCircleShape>,
     std::vector<CLineBody>,
+    std::vector<CController>,
+    std::vector<CSensorArray>,
+    std::vector<CSteer>,
     std::vector<CColor>,
     std::vector<std::bitset<MaxComponents>>
 > EntityData;
@@ -30,6 +33,9 @@ class EntityMemoryPool
         getData<CCircleBody>().resize(MaxEntities);
         getData<CCircleShape>().resize(MaxEntities);
         getData<CLineBody>().resize(MaxEntities);
+        getData<CSensorArray>().resize(MaxEntities);
+        getData<CSteer>().resize(MaxEntities);
+        getData<CController>().resize(MaxEntities);
         getData<CColor>().resize(MaxEntities);
         getData<std::bitset<MaxComponents>>().resize(MaxEntities);
         m_tags.resize(MaxEntities);
@@ -50,7 +56,10 @@ public:
         getData<CCircleBody>()[m_numEntities] = {};
         getData<CCircleShape>()[m_numEntities] = {};
         getData<CLineBody>()[m_numEntities] = {};
+        getData<CSensorArray>()[m_numEntities] = {};
         getData<CColor>()[m_numEntities] = {};
+        getData<CController>()[m_numEntities] = {};
+        getData<CSteer>()[m_numEntities] = {};
         getData<std::bitset<MaxComponents>>()[m_numEntities] = {};
         m_tags[m_numEntities] = tag;
         m_active[m_numEntities] = true;

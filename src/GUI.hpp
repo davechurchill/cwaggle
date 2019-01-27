@@ -8,7 +8,6 @@
 #include "Simulator.hpp"
 #include "ExampleWorlds.hpp"
 #include "LineBody.hpp"
-#include "SensorTools.hpp"
 
 class GUI
 {
@@ -251,22 +250,50 @@ class GUI
         }
 
         // draw robot sensors
-        /*if (m_sensors)
+        if (m_sensors)
         {
             float sensorRadius = 2;
-            for (auto & robot : m_sim.getWorld().getRobots())
+            for (auto & robot : m_sim.getWorld().getEntities("robot"))
             {
-                for (auto & sensor : robot.gridSensors())
+                if (!robot.hasComponent<CSensorArray>()) { continue; }
+                auto & sensors = robot.getComponent<CSensorArray>();
+                auto & c = robot.getComponent<CColor>();
+
+                for (auto & sensor : sensors.gridSensors)
                 {
                     sf::CircleShape sensorShape(sensorRadius, 32);
                     sensorShape.setOrigin(sensorRadius, sensorRadius);
-                    Vec2 pos = SensorTools::GetGridSensorPosition(sensor, m_sim.getWorld());
+                    Vec2 pos = sensor.getPosition();
                     sensorShape.setPosition((float)pos.x, (float)pos.y);
                     sensorShape.setFillColor(sf::Color::White);
                     m_window.draw(sensorShape);
                 }
+
+                for (auto & sensor : sensors.obstacleSensors)
+                {
+                    sf::CircleShape sensorShape((float)sensor.radius(), 32);
+                    sensorShape.setOrigin((float)sensor.radius(), (float)sensor.radius());
+                    Vec2 pos = sensor.getPosition();
+                    sensorShape.setPosition((float)pos.x, (float)pos.y);
+                    double reading = sensor.getReading(m_sim.getWorld());
+                    if (reading > 0) { sensorShape.setFillColor(sf::Color(255, 255, 255, 80)); }
+                    else { sensorShape.setFillColor(sf::Color(0, 255, 255, 80)); }
+                    m_window.draw(sensorShape);
+                }
+
+                for (auto & sensor : sensors.puckSensors)
+                {
+                    sf::CircleShape sensorShape((float)sensor.radius(), 32);
+                    sensorShape.setOrigin((float)sensor.radius(), (float)sensor.radius());
+                    Vec2 pos = sensor.getPosition();
+                    sensorShape.setPosition((float)pos.x, (float)pos.y);
+                    double reading = sensor.getReading(m_sim.getWorld());
+                    if (reading > 0) { sensorShape.setFillColor(sf::Color(255, 255, 255, 80)); }
+                    else { sensorShape.setFillColor(sf::Color(c.r, c.g, c.b, 80)); }
+                    m_window.draw(sensorShape);
+                }
             }
-        }*/
+        }
 
         std::cout << m_sim.getWorld().getEntities("line").size() << "\n";
         for (auto & e : m_sim.getWorld().getEntities("line"))

@@ -5,6 +5,7 @@
 #include <array>
 
 #include "Vec2.hpp"
+#include "Sensors.h"
 
 class CTransform
 {
@@ -43,6 +44,15 @@ public:
     }
 };
 
+class CSensorArray
+{
+public:
+    std::vector<GridSensor>     gridSensors;
+    std::vector<PuckSensor>     puckSensors;
+    std::vector<ObstacleSensor> obstacleSensors;
+    CSensorArray() {}
+};
+
 class CLineBody
 {
 public:
@@ -55,7 +65,14 @@ public:
     CLineBody(Vec2 start, Vec2 end, double radius)
         : s(start), e(end), r(radius) { }
 };
- 
+
+class CSteer
+{
+public:
+    double angle = 0;
+    double speed = 0;
+    CSteer() {}
+};
 
 class CColor
 {
@@ -67,6 +84,16 @@ public:
     CColor() {}
     CColor(int rr, int gg, int bb, int aa)
         : r((uint8_t)rr), g((uint8_t)gg), b((uint8_t)bb), a((uint8_t)aa) {}
+};
+
+class EntityController;
+class CController
+{
+public:
+    std::shared_ptr<EntityController> controller;
+    CController() {}
+    CController(decltype(controller) c)
+        : controller(c) {}
 };
 
 class CShape

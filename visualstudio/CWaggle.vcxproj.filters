@@ -2,13 +2,14 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="..\src\main.cpp" />
+    <ClCompile Include="..\src\Sensors.cpp">
+      <Filter>sensors</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\ExampleGrids.hpp" />
     <ClInclude Include="..\src\ExampleWorlds.hpp" />
     <ClInclude Include="..\src\GUI.hpp" />
-    <ClInclude Include="..\src\RobotAction.hpp" />
-    <ClInclude Include="..\src\RobotControllers.hpp" />
     <ClInclude Include="..\src\Simulator.hpp" />
     <ClInclude Include="..\src\Timer.hpp" />
     <ClInclude Include="..\src\ValueGrid.hpp" />
@@ -17,23 +18,23 @@
     <ClInclude Include="..\src\Components.hpp">
       <Filter>ecs</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\Entity.hpp">
-      <Filter>ecs</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\EntityManager.hpp">
       <Filter>ecs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\EntityControllers.hpp">
+      <Filter>control</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\EntityAction.hpp">
+      <Filter>control</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Sensors.h">
+      <Filter>sensors</Filter>
     </ClInclude>
     <ClInclude Include="..\src\EntityMemoryPool.hpp">
       <Filter>ecs</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\PuckSensor.hpp">
-      <Filter>sensors</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\SensorTools.hpp">
-      <Filter>sensors</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\GridSensor.hpp">
-      <Filter>sensors</Filter>
+    <ClInclude Include="..\src\Entity.hpp">
+      <Filter>ecs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -42,6 +43,9 @@
     </Filter>
     <Filter Include="sensors">
       <UniqueIdentifier>{5f2dbf19-9f22-4de4-b843-4976e29db089}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="control">
+      <UniqueIdentifier>{5d7e979a-4d56-42a7-9856-f50c6af5cf3a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Components.hpp"
-#include "EntityMemoryPool.hpp"
 #include <cassert>
 #include <vector>
 
 class EntityManager;
+
+#include "EntityMemoryPool.hpp"
 
 inline size_t GetComponentTypeID()
 {
@@ -37,6 +37,11 @@ public:
         return m_id; 
     }
 
+    operator size_t() const
+    {
+        return m_id;
+    }
+
     bool operator == (Entity rhs) const
     {
         return m_id == rhs.m_id;
@@ -47,22 +52,19 @@ public:
         return !(*this == rhs);
     }
 
-    bool isActive() 
+    bool Entity::isActive()
     {
         return EntityMemoryPool::Instance().getActive()[m_id];
     }
 
-    void setActive(bool active)
+    void Entity::setActive(bool active)
     {
         EntityMemoryPool::Instance().getActive()[m_id] = active;
     }
 
-    const std::string & tag() const
+    const std::string & Entity::tag()
     {
-        auto & instance = EntityMemoryPool::Instance();
-        auto & tags = instance.getTags();
-        auto & tag = tags[m_id];
-        return tag;
+        return EntityMemoryPool::Instance().getTags()[m_id];;
     }
 
     template <typename T>

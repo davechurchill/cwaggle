@@ -5,7 +5,7 @@
 // allows us to use the WorldState / simulation
 #include "World.hpp"
 #include "Simulator.hpp"
-#include "RobotControllers.hpp"
+#include "EntityControllers.hpp"
 
 #include <iostream>
 
@@ -14,8 +14,8 @@ int main()
 {
     // set up a new world that will be used for our simulation
     // let's pull one from the ExampleWorlds
-    auto world = ExampleWorlds::GetGridWorld720(2);
-    //auto world = ExampleWorlds::GetGetSquareWorld(Vec2(800, 800), 20, 10, 250, 10);
+    //auto world = ExampleWorlds::GetGridWorld720(2);
+    auto world = ExampleWorlds::GetGetSquareWorld(Vec2(800, 800), 20, 10, 250, 10);
 
     // create a new simulator with the given world
     Simulator sim(world);
@@ -30,25 +30,24 @@ int main()
     while (true)
     {
         // un-comment to update the robots with a sample controller
-         /*for (auto & robot : sim.getWorld().getRobots())
-         {
-             if (robot.type() == RobotTypes::Outie)
-             {
-                 robot.doAction(RobotControllers::TurnController(1, 0.03));
-             }
-             else if (robot.type() == RobotTypes::Innie)
-             {
-                 robot.doAction(RobotControllers::TurnController(1, -0.03));
-             }
-            
-         }*/
+        for (auto & robot : sim.getWorld().getEntities("robot"))
+        {
+            // if the entity doesn't have a controller we can skip it
+            if (!robot.hasComponent<CController>()) { continue; }
+
+            // get the action that should be done for this entity
+            EntityAction action = robot.getComponent<CController>().controller->getAction();
+
+            // have the action apply its effects to the entity
+            action.doAction(robot);
+        }
 
         // call the world physics simulation update
         // parameter = how much sim time should pass (default 1.0)
         // the smaller the time update, the more accurate/smooth the simulation
-        for (size_t i = 0; i < 10; i++)
+        for (size_t i = 0; i < 1; i++)
         {
-            sim.update(0.1);
+            sim.update(1);
         }
         
         // if a gui exists, call for its display to update
