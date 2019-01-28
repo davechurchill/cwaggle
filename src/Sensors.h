@@ -1,6 +1,9 @@
 #pragma once
 
+#include <memory>
+
 class World;
+
 
 class Sensor
 {
@@ -18,7 +21,7 @@ public:
     Vec2 getPosition();
     virtual double angle() const;
     virtual double distance() const;
-    virtual double getReading(World & world) = 0;
+    virtual double getReading(std::shared_ptr<World> world) = 0;
 };
 
 
@@ -28,7 +31,7 @@ class GridSensor : public Sensor
 public:
 
     GridSensor(size_t ownerID, double angle, double distance);
-    inline virtual double getReading(World & world);
+    inline virtual double getReading(std::shared_ptr<World> world);
 };
 
 
@@ -39,7 +42,7 @@ class PuckSensor : public Sensor
 public:
 
     PuckSensor(size_t ownerID, double angle, double distance, double radius);
-    inline virtual double getReading(World & world);
+    inline virtual double getReading(std::shared_ptr<World> world);
     double radius() const;
 };
 
@@ -50,6 +53,6 @@ class ObstacleSensor : public Sensor
 public:
 
     ObstacleSensor(size_t ownerID, double angle, double distance, double radius);
-    inline virtual double getReading(World & world);
+    inline virtual double getReading(std::shared_ptr<World> world);
     double radius() const;
 };

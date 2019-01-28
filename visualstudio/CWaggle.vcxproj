@@ -25,6 +25,7 @@
     <ClInclude Include="..\src\EntityAction.hpp" />
     <ClInclude Include="..\src\EntityControllers.hpp" />
     <ClInclude Include="..\src\Sensors.h" />
+    <ClInclude Include="..\src\SensorTools.hpp" />
     <ClInclude Include="..\src\Simulator.hpp" />
     <ClInclude Include="..\src\Timer.hpp" />
     <ClInclude Include="..\src\ValueGrid.hpp" />

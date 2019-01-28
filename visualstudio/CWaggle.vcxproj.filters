@@ -36,6 +36,9 @@
     <ClInclude Include="..\src\Entity.hpp">
       <Filter>ecs</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\SensorTools.hpp">
+      <Filter>sensors</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ecs">

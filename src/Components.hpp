@@ -66,6 +66,15 @@ public:
         : s(start), e(end), r(radius) { }
 };
 
+
+class CRobotType
+{
+public:
+    size_t type = 0;
+    CRobotType(size_t t = 0)
+        : type(t) {}
+};
+
 class CSteer
 {
 public:

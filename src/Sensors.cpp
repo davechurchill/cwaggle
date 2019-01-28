@@ -30,13 +30,13 @@ double Sensor::distance() const
 GridSensor::GridSensor(size_t ownerID, double angle, double distance)
     : Sensor(ownerID, angle, distance) {}
 
-double GridSensor::getReading(World & world)
+double GridSensor::getReading(std::shared_ptr<World> world)
 {
-    if (world.getGrid().width() == 0) { return 0; }
+    if (world->getGrid().width() == 0) { return 0; }
     Vec2 sPos = getPosition();
-    size_t gX = (size_t)round(sPos.x / world.width());
-    size_t gY = (size_t)round(sPos.y / world.height());
-    return world.getGrid().get(gX, gY);
+    size_t gX = (size_t)round(world->getGrid().width()  * sPos.x / world->width());
+    size_t gY = (size_t)round(world->getGrid().height() * sPos.y / world->height());
+    return world->getGrid().get(gX, gY);
 }
 
 PuckSensor::PuckSensor(size_t ownerID, double angle, double distance, double radius)
@@ -45,10 +45,11 @@ PuckSensor::PuckSensor(size_t ownerID, double angle, double distance, double rad
     m_radius = radius;
 }
 
-double PuckSensor::getReading(World & world)
+double PuckSensor::getReading(std::shared_ptr<World> world)
 {
+    double sum = 0;
     Vec2 pos = getPosition();
-    for (auto puck : world.getEntities("puck"))
+    for (auto puck : world->getEntities("puck"))
     {
         auto & t = puck.getComponent<CTransform>();
         auto & b = puck.getComponent<CCircleBody>();
@@ -56,10 +57,10 @@ double PuckSensor::getReading(World & world)
         // collision with a puck
         if (t.p.distSq(pos) < (m_radius + b.r)*(m_radius + b.r))
         {
-            return 1.0;
+            sum += 1.0;
         }
     }
-    return 0;
+    return sum;
 }
 
 double PuckSensor::radius() const
@@ -74,10 +75,11 @@ ObstacleSensor::ObstacleSensor(size_t ownerID, double angle, double distance, do
     m_radius = radius;
 }
 
-double ObstacleSensor::getReading(World & world)
+double ObstacleSensor::getReading(std::shared_ptr<World> world)
 {
+    double sum = 0;
     Vec2 pos = getPosition();
-    for (auto e : world.getEntities())
+    for (auto e : world->getEntities())
     {
         if (!e.hasComponent<CCircleBody>()) { continue; }
         if (m_ownerID == e.id()) { continue; }
@@ -88,10 +90,10 @@ double ObstacleSensor::getReading(World & world)
         // collision with a puck
         if (t.p.distSq(pos) < (m_radius + b.r)*(m_radius + b.r))
         {
-            return 1.0;
+            sum += 1.0;
         }
     }
-    return 0;
+    return sum;
 }
 
 double ObstacleSensor::radius() const

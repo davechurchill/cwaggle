@@ -8,6 +8,7 @@
 #include "Simulator.hpp"
 #include "ExampleWorlds.hpp"
 #include "LineBody.hpp"
+#include "SensorTools.hpp"
 
 class GUI
 {
@@ -27,7 +28,7 @@ class GUI
 
     std::vector<sf::RectangleShape> m_gridRectangles;
 
-    void init(const World & world)
+    void init(std::shared_ptr<World> world)
     {
         m_sim.setWorld(world);
         m_font.loadFromFile("fonts/cour.ttf");
@@ -37,11 +38,11 @@ class GUI
         m_text.setFillColor(sf::Color::Yellow);
 
         // create the grid rectangle shapes
-        auto & grid = m_sim.getWorld().getGrid();
+        auto & grid = m_sim.getWorld()->getGrid();
         if (grid.width() > 0)
         {
-            double rWidth = m_sim.getWorld().width() / (double)grid.width();
-            double rHeight = m_sim.getWorld().height() / (double)grid.height();
+            double rWidth = m_sim.getWorld()->width() / (double)grid.width();
+            double rHeight = m_sim.getWorld()->height() / (double)grid.height();
             sf::Vector2f rectSize((float)rWidth, (float)rHeight);
 
             // create the 2D grid of rectangles 
@@ -90,6 +91,7 @@ class GUI
                     case sf::Keyboard::Num7:   init(ExampleWorlds::GetGridWorld720(7)); break;
                     case sf::Keyboard::Num8:   init(ExampleWorlds::GetGridWorld720(8)); break;
                     case sf::Keyboard::Num9:   init(ExampleWorlds::GetGridWorld720(9)); break;
+                    case sf::Keyboard::Num0:   init(ExampleWorlds::GetGetSquareWorld(Vec2(800, 800), 20, 10, 250, 10)); break;
                     case sf::Keyboard::D:      m_debug = !m_debug; break;
                     case sf::Keyboard::G:      m_grid = !m_grid; break;
                     case sf::Keyboard::S:      m_sensors = !m_sensors; break;
@@ -101,7 +103,7 @@ class GUI
             {
                 if (event.mouseButton.button == sf::Mouse::Left)
                 {
-                    for (auto e : m_sim.getWorld().getEntities())
+                    for (auto e : m_sim.getWorld()->getEntities())
                     {
                         Vec2 mPos((double)event.mouseButton.x, (double)event.mouseButton.y);
                         if (mPos.dist(e.getComponent<CTransform>().p) < e.getComponent<CCircleBody>().r)
@@ -111,7 +113,7 @@ class GUI
                         }
                     }
 
-                    for (auto e: m_sim.getWorld().getEntities("line"))
+                    for (auto e: m_sim.getWorld()->getEntities("line"))
                     {
                         Vec2 mPos((double)event.mouseButton.x, (double)event.mouseButton.y);
                         auto & line = e.getComponent<CLineBody>();
@@ -134,7 +136,7 @@ class GUI
 
                 if (event.mouseButton.button == sf::Mouse::Right)
                 {
-                    for (auto & e : m_sim.getWorld().getEntities())
+                    for (auto & e : m_sim.getWorld()->getEntities())
                     {
                         Vec2 mPos((double)event.mouseButton.x, (double)event.mouseButton.y);
                         if (mPos.dist(e.getComponent<CTransform>().p) < e.getComponent<CCircleBody>().r)
@@ -222,7 +224,7 @@ class GUI
         }
 
         // draw circles
-        for (auto e : m_sim.getWorld().getEntities())
+        for (auto e : m_sim.getWorld()->getEntities())
         {
             if (!e.hasComponent<CCircleShape>()) { continue; }
 
@@ -253,7 +255,7 @@ class GUI
         if (m_sensors)
         {
             float sensorRadius = 2;
-            for (auto & robot : m_sim.getWorld().getEntities("robot"))
+            for (auto & robot : m_sim.getWorld()->getEntities("robot"))
             {
                 if (!robot.hasComponent<CSensorArray>()) { continue; }
                 auto & sensors = robot.getComponent<CSensorArray>();
@@ -292,10 +294,11 @@ class GUI
                     else { sensorShape.setFillColor(sf::Color(c.r, c.g, c.b, 80)); }
                     m_window.draw(sensorShape);
                 }
+
             }
         }
 
-        for (auto & e : m_sim.getWorld().getEntities("line"))
+        for (auto & e : m_sim.getWorld()->getEntities("line"))
         {
             auto & line = e.getComponent<CLineBody>();
 
@@ -322,6 +325,20 @@ class GUI
             }
         }
 
+        if (m_selected != Entity() && m_selected.hasComponent<CSensorArray>())
+        {
+            auto & t = m_selected.getComponent<CTransform>();
+            SensorReading reading;
+            SensorsTools::ReadSensorArray(m_selected, m_sim.getWorld(), reading);
+
+            sf::Text text;
+            text.setFont(m_font);
+            text.setCharacterSize(12);
+            text.setString(reading.toString());
+            text.setPosition((float)t.p.x, (float)t.p.y);
+            m_window.draw(text);
+        }
+        
         if (m_shooting != Entity())
         {
             drawLine(m_shooting.getComponent<CTransform>().p, Vec2(m_mousePos.x, m_mousePos.y), sf::Color::Red);
@@ -329,7 +346,7 @@ class GUI
 
         // draw score
         std::stringstream ss;
-        ss << "Num Objs: " << m_sim.getWorld().getEntities().size() << "\n";
+        ss << "Num Objs: " << m_sim.getWorld()->getEntities().size() << "\n";
         ss << "CPU Time: " << m_sim.getComputeTime() << "ms\n";
         ss << "Max Time: " << m_sim.getComputeTimeMax() << "ms\n";
         ss << "Debug:    " << (m_debug ? "on" : "off");
@@ -345,7 +362,7 @@ public:
     GUI(Simulator & sim, size_t fps)
         : m_sim(sim)
     {
-        m_window.create(sf::VideoMode((size_t)m_sim.getWorld().width(), (size_t)m_sim.getWorld().height()), "CWaggle");
+        m_window.create(sf::VideoMode((size_t)m_sim.getWorld()->width(), (size_t)m_sim.getWorld()->height()), "CWaggle");
         m_window.setFramerateLimit(fps);
         init(sim.getWorld());
     }

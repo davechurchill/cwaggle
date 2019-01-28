@@ -70,13 +70,13 @@ public:
     template <typename T>
     inline bool hasComponent()
     {
-        return getComponent<std::bitset<MaxComponents>>()[GetComponentTypeID<T>()];
+        return EntityMemoryPool::Instance().hasComponent()[m_id][GetComponentTypeID<T>()];
     }
 
     template <typename T, typename... TArgs>
     inline T & addComponent(TArgs&&... mArgs)
     {
-        getComponent<std::bitset<MaxComponents>>()[GetComponentTypeID<T>()] = true;
+        EntityMemoryPool::Instance().hasComponent()[m_id][GetComponentTypeID<T>()] = true;
         getComponent<T>() = T(std::forward<TArgs>(mArgs)...);
         return getComponent<T>();
     }

@@ -22,12 +22,12 @@ typedef std::vector<Entity> EntityVec;
 
 class Simulator
 {
-    World m_world;
+    std::shared_ptr<World> m_world;
 
     // physics configuration
     double m_timeStep = 1.0;  // time step per update call
     double m_overlapThreshold = 0.1;  // allow overlap of this amount without resolution
-    double m_deceleration = 0.2;  // deceleration multiplier, replace with friction
+    double m_deceleration = 0.4;  // deceleration multiplier, replace with friction
     double m_stoppingSpeed = 0.001; // stop an object if moving less than this speed
 
     // time keeping
@@ -43,7 +43,7 @@ class Simulator
     void movement()
     {
         // update entity's velocity from its heading and angle
-        for (auto & entity : m_world.getEntities("robot"))
+        for (auto & entity : m_world->getEntities("robot"))
         { 
             if (!entity.hasComponent<CSteer>()) { continue; }
 
@@ -56,7 +56,7 @@ class Simulator
         }
 
         // apply acceleration, velocity to all circles
-        for (auto e : m_world.getEntities())
+        for (auto e : m_world->getEntities())
         {
             auto & t = e.getComponent<CTransform>();
 
@@ -79,7 +79,7 @@ class Simulator
         // we can skip collision checking for any circle that hasn't moved
         // static resolution doesn't alter speed, so movement not recorded
         // so if a circle collided last frame, consider it to have moved
-        for (auto e : m_world.getEntities())
+        for (auto e : m_world->getEntities())
         {
             if (e.getComponent<CCircleBody>().collided) { e.getComponent<CTransform>().moved = true; }
             e.getComponent<CCircleBody>().collided = false;
@@ -98,7 +98,7 @@ class Simulator
             auto & b1 = *(bIt + e1.id());
 
             // step 1: check collisions of all circles against all lines
-            for (auto & e : m_world.getEntities("line"))
+            for (auto & e : m_world->getEntities("line"))
             {
                 auto & edge = e.getComponent<CLineBody>();
 
@@ -174,16 +174,16 @@ class Simulator
                 }
             }
             // wraparound behavior
-            //if (c1.p.x < 0) { c1.p.x += m_world.width(); }
-            //if (c1.p.y < 0) { c1.p.y += m_world.height(); }
-            //if (c1.p.x >= m_world.width()) { c1.p.x -= m_world.width(); }
-            //if (c1.p.y >= m_world.height()) { c1.p.y -= m_world.height(); }
+            //if (c1.p.x < 0) { c1.p.x += m_world->width(); }
+            //if (c1.p.y < 0) { c1.p.y += m_world->height(); }
+            //if (c1.p.x >= m_world->width()) { c1.p.x -= m_world->width(); }
+            //if (c1.p.y >= m_world->height()) { c1.p.y -= m_world->height(); }
             
             // check for collisions with the bounds of the world
             if (t1.p.x - b1.r < 0) { t1.p.x = b1.r; b1.collided = true; }
             if (t1.p.y - b1.r < 0) { t1.p.y = b1.r; b1.collided = true; }
-            if (t1.p.x + b1.r > m_world.width()) { t1.p.x = m_world.width() - b1.r;  b1.collided = true; }
-            if (t1.p.y + b1.r > m_world.height()) { t1.p.y = m_world.height() - b1.r; b1.collided = true; }
+            if (t1.p.x + b1.r > m_world->width()) { t1.p.x = m_world->width() - b1.r;  b1.collided = true; }
+            if (t1.p.y + b1.r > m_world->height()) { t1.p.y = m_world->height() - b1.r; b1.collided = true; }
         }
 
         // step 3: calculate and apply dynamic collision resolution to any detected collisions
@@ -222,7 +222,7 @@ class Simulator
 
 public:
 
-    Simulator(const World & world)
+    Simulator(std::shared_ptr<World> world)
         : m_world(world)
     {
         m_collisions.reserve(MaxEntities);
@@ -236,19 +236,19 @@ public:
         m_timeStep = timeStep;
 
         // update the world so entities get managed
-        m_world.update();
+        m_world->update();
 
         // populate the vector of entities we care about colliding
         m_collisionEntities.clear();
-        appendTo(m_world.getEntities("robot"), m_collisionEntities);
-        appendTo(m_world.getEntities("puck"), m_collisionEntities);
+        appendTo(m_world->getEntities("robot"), m_collisionEntities);
+        appendTo(m_world->getEntities("puck"), m_collisionEntities);
 
         // do the actual simulation
         movement();
         collisions();
     }
 
-    void setWorld(const World & world)
+    void setWorld(const std::shared_ptr<World> world)
     {
         m_world = world;
     }
@@ -268,7 +268,7 @@ public:
         return m_computeTimeMax;
     }
 
-    World & getWorld()
+    std::shared_ptr<World> getWorld()
     {
         return m_world;
     }

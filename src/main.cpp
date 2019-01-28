@@ -24,13 +24,13 @@ int main()
     // the frame rate limit should be set at least as high as your monitor refresh rate
     // this is completely optional, simulation will run with no visualization
     // GUI can also be created at any time to start visualizing an ongoing simulation
-    GUI gui(sim, 144);
+    GUI gui(sim, 60);
 
     // run the simulation and gui update() function in a loop
     while (true)
     {
         // un-comment to update the robots with a sample controller
-        for (auto & robot : sim.getWorld().getEntities("robot"))
+        for (auto & robot : sim.getWorld()->getEntities("robot"))
         {
             // if the entity doesn't have a controller we can skip it
             if (!robot.hasComponent<CController>()) { continue; }
@@ -45,9 +45,9 @@ int main()
         // call the world physics simulation update
         // parameter = how much sim time should pass (default 1.0)
         // the smaller the time update, the more accurate/smooth the simulation
-        for (size_t i = 0; i < 1; i++)
+        for (size_t i = 0; i < 10; i++)
         {
-            sim.update(1);
+            sim.update(0.1);
         }
         
         // if a gui exists, call for its display to update
