@@ -49,7 +49,7 @@ namespace ExampleWorlds
 
     std::shared_ptr<World> GetGridWorld720(size_t skip)
     {
-        auto world = std::make_shared<World>(1280, 720);\
+        auto world = std::make_shared<World>(1280, 720);
 
         Entity robot1 = world->addEntity("robot");
         robot1.addComponent<CTransform>(Vec2(200, 200));

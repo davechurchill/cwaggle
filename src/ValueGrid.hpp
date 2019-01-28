@@ -23,6 +23,8 @@ public:
     inline double get(size_t x, size_t y) const
     {
         size_t index = getIndex(x, y);
+
+        if (index >= m_values.size()) return 0;
         assert(index < m_values.size());
         return m_values[index];
     }

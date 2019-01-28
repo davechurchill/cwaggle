@@ -43,12 +43,12 @@ namespace SensorsTools
         }
         for (auto & sensor : sensors.obstacleSensors)
         {
-            if (sensor.angle() < 0) { reading.leftObstacle += sensor.getReading(world); }
+            if (sensor.angle() <= 0) { reading.leftObstacle += sensor.getReading(world); }
             if (sensor.angle() > 0) { reading.rightObstacle += sensor.getReading(world); }
         }
         for (auto & sensor : sensors.puckSensors)
         {
-            if (sensor.angle() < 0) { reading.leftPucks += sensor.getReading(world); }
+            if (sensor.angle() <= 0) { reading.leftPucks += sensor.getReading(world); }
             if (sensor.angle() > 0) { reading.rightPucks += sensor.getReading(world); }
         }
     }

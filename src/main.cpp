@@ -7,7 +7,7 @@
 #include "Simulator.hpp"
 #include "EntityControllers.hpp"
 
-int main()
+int main(int argc, char ** argv)
 {
     // set up a new world that will be used for our simulation
     // let's pull one from the ExampleWorlds
@@ -29,6 +29,13 @@ int main()
 
     // how many simulation ticks are peformed before each world render in the GUI
     double stepsPerRender = 1;
+
+    // read that value from console if it exists
+    if (argc == 2)
+    {
+        std::stringstream ss(argv[1]);
+        ss >> stepsPerRender;
+    }
 
     // run the simulation and gui update() function in a loop
     while (true)
