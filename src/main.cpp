@@ -7,9 +7,6 @@
 #include "Simulator.hpp"
 #include "EntityControllers.hpp"
 
-#include <iostream>
-
-
 int main()
 {
     // set up a new world that will be used for our simulation
@@ -24,32 +21,38 @@ int main()
     // the frame rate limit should be set at least as high as your monitor refresh rate
     // this is completely optional, simulation will run with no visualization
     // GUI can also be created at any time to start visualizing an ongoing simulation
-    GUI gui(sim, 60);
+    GUI gui(sim, 144);
+
+    // determines the amount of 'time' that passes per simulation tick
+    // lower is more 'accurate', but 'slower' to get to a given time
+    double simulationTimeStep = 1.0;
+
+    // how many simulation ticks are peformed before each world render in the GUI
+    double stepsPerRender = 1;
 
     // run the simulation and gui update() function in a loop
     while (true)
     {
-        // un-comment to update the robots with a sample controller
-        for (auto & robot : sim.getWorld()->getEntities("robot"))
+        for (size_t i = 0; i < stepsPerRender; i++)
         {
-            // if the entity doesn't have a controller we can skip it
-            if (!robot.hasComponent<CController>()) { continue; }
+            // un-comment to update the robots with a sample controller
+            for (auto & robot : sim.getWorld()->getEntities("robot"))
+            {
+                // if the entity doesn't have a controller we can skip it
+                if (!robot.hasComponent<CController>()) { continue; }
 
-            // get the action that should be done for this entity
-            EntityAction action = robot.getComponent<CController>().controller->getAction();
+                // get the action that should be done for this entity
+                EntityAction action = robot.getComponent<CController>().controller->getAction();
 
-            // have the action apply its effects to the entity
-            action.doAction(robot);
+                // have the action apply its effects to the entity
+                action.doAction(robot, simulationTimeStep);
+            }
+
+            // call the world physics simulation update
+            // parameter = how much sim time should pass (default 1.0)
+            sim.update(simulationTimeStep);
         }
-
-        // call the world physics simulation update
-        // parameter = how much sim time should pass (default 1.0)
-        // the smaller the time update, the more accurate/smooth the simulation
-        for (size_t i = 0; i < 10; i++)
-        {
-            sim.update(0.1);
-        }
-        
+    
         // if a gui exists, call for its display to update
         // note: simulation is limited by gui frame rate limit
         gui.update();

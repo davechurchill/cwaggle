@@ -19,14 +19,14 @@ public:
     inline const auto speed()        const { return m_speed; }
     inline const auto angularSpeed() const { return m_angularSpeed; }
 
-    virtual void doAction(Entity e)
+    virtual void doAction(Entity e, double timeStep)
     {
         if (!e.hasComponent<CSteer>())
         {
             e.addComponent<CSteer>();
         }
 
-        e.getComponent<CSteer>().angle += m_angularSpeed;
+        e.getComponent<CSteer>().angle += m_angularSpeed * timeStep;
         e.getComponent<CSteer>().speed  = m_speed;
     }
 };
