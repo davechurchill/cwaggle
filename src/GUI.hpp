@@ -9,6 +9,7 @@
 #include "ExampleWorlds.hpp"
 #include "LineBody.hpp"
 #include "SensorTools.hpp"
+#include "Eval.hpp"
 
 class GUI
 {
@@ -344,7 +345,7 @@ class GUI
             drawLine(m_shooting.getComponent<CTransform>().p, Vec2(m_mousePos.x, m_mousePos.y), sf::Color::Red);
         }
 
-        // draw score
+        // draw information
         std::stringstream ss;
         ss << "Num Objs: " << m_sim.getWorld()->getEntities().size() << "\n";
         ss << "CPU Time: " << m_sim.getComputeTime() << "ms\n";
@@ -352,6 +353,17 @@ class GUI
         ss << "Debug:    " << (m_debug ? "on" : "off");
         m_text.setString(ss.str());
         m_window.draw(m_text);
+
+        // draw evaluation
+        double puckEval = Eval::PuckClusterEval(m_sim.getWorld());
+        std::stringstream ssp;
+        ssp << "Puck Eval: " << puckEval;
+        sf::Text puckText;
+        puckText.setFont(m_font);
+        puckText.setCharacterSize(20);
+        puckText.setPosition(5, m_sim.getWorld()->height()-30);
+        puckText.setString(ssp.str());
+        m_window.draw(puckText);
 
         m_window.display();
     }

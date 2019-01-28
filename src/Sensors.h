@@ -31,7 +31,7 @@ class GridSensor : public Sensor
 public:
 
     GridSensor(size_t ownerID, double angle, double distance);
-    inline virtual double getReading(std::shared_ptr<World> world);
+    virtual double getReading(std::shared_ptr<World> world);
 };
 
 
@@ -42,7 +42,7 @@ class PuckSensor : public Sensor
 public:
 
     PuckSensor(size_t ownerID, double angle, double distance, double radius);
-    inline virtual double getReading(std::shared_ptr<World> world);
+    virtual double getReading(std::shared_ptr<World> world);
     double radius() const;
 };
 
@@ -53,6 +53,6 @@ class ObstacleSensor : public Sensor
 public:
 
     ObstacleSensor(size_t ownerID, double angle, double distance, double radius);
-    inline virtual double getReading(std::shared_ptr<World> world);
+    virtual double getReading(std::shared_ptr<World> world);
     double radius() const;
 };

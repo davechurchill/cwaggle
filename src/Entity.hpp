@@ -52,17 +52,17 @@ public:
         return !(*this == rhs);
     }
 
-    bool Entity::isActive()
+    bool isActive()
     {
         return EntityMemoryPool::Instance().getActive()[m_id];
     }
 
-    void Entity::setActive(bool active)
+    void setActive(bool active)
     {
         EntityMemoryPool::Instance().getActive()[m_id] = active;
     }
 
-    const std::string & Entity::tag()
+    const std::string & tag()
     {
         return EntityMemoryPool::Instance().getTags()[m_id];;
     }

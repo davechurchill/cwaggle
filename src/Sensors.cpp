@@ -1,5 +1,3 @@
-#pragma once
-
 #include "Vec2.hpp"
 #include "Sensors.h"
 #include "World.hpp"
