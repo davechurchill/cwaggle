@@ -7,7 +7,6 @@
 #include "Vec2.hpp"
 #include "Simulator.hpp"
 #include "ExampleWorlds.hpp"
-#include "LineBody.hpp"
 #include "SensorTools.hpp"
 #include "Eval.hpp"
 
@@ -361,7 +360,7 @@ class GUI
         sf::Text puckText;
         puckText.setFont(m_font);
         puckText.setCharacterSize(20);
-        puckText.setPosition(5, m_sim.getWorld()->height()-30);
+        puckText.setPosition(5, (float)m_sim.getWorld()->height()-30);
         puckText.setString(ssp.str());
         m_window.draw(puckText);
 

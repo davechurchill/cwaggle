@@ -6,7 +6,6 @@
 
 #include "Vec2.hpp"
 #include "Timer.hpp"
-#include "LineBody.hpp"
 #include "ValueGrid.hpp"
 
 #include "EntityManager.hpp"
