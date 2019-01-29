@@ -12,7 +12,7 @@
 
 class GUI
 {
-    Simulator &         m_sim;
+    std::shared_ptr<Simulator> m_sim;
     sf::RenderWindow    m_window;           // the window we will draw to
     sf::Font            m_font;             // the font we will use to draw
     sf::Text            m_text;
@@ -30,7 +30,7 @@ class GUI
 
     void init(std::shared_ptr<World> world)
     {
-        m_sim.setWorld(world);
+        m_sim->setWorld(world);
         m_font.loadFromFile("fonts/cour.ttf");
         m_text.setFont(m_font);
         m_text.setCharacterSize(24);
@@ -38,11 +38,11 @@ class GUI
         m_text.setFillColor(sf::Color::Yellow);
 
         // create the grid rectangle shapes
-        auto & grid = m_sim.getWorld()->getGrid();
+        auto & grid = m_sim->getWorld()->getGrid();
         if (grid.width() > 0)
         {
-            double rWidth = m_sim.getWorld()->width() / (double)grid.width();
-            double rHeight = m_sim.getWorld()->height() / (double)grid.height();
+            double rWidth = m_sim->getWorld()->width() / (double)grid.width();
+            double rHeight = m_sim->getWorld()->height() / (double)grid.height();
             sf::Vector2f rectSize((float)rWidth, (float)rHeight);
 
             // create the 2D grid of rectangles 
@@ -91,7 +91,7 @@ class GUI
                     case sf::Keyboard::Num7:   init(ExampleWorlds::GetGridWorld720(7)); break;
                     case sf::Keyboard::Num8:   init(ExampleWorlds::GetGridWorld720(8)); break;
                     case sf::Keyboard::Num9:   init(ExampleWorlds::GetGridWorld720(9)); break;
-                    case sf::Keyboard::Num0:   init(ExampleWorlds::GetGetSquareWorld(Vec2(800, 800), 20, 10, 250, 10)); break;
+                    case sf::Keyboard::Num0:   init(ExampleWorlds::GetGetSquareWorld(800, 800, 20, 10, 250, 10)); break;
                     case sf::Keyboard::D:      m_debug = !m_debug; break;
                     case sf::Keyboard::G:      m_grid = !m_grid; break;
                     case sf::Keyboard::S:      m_sensors = !m_sensors; break;
@@ -103,7 +103,7 @@ class GUI
             {
                 if (event.mouseButton.button == sf::Mouse::Left)
                 {
-                    for (auto e : m_sim.getWorld()->getEntities())
+                    for (auto e : m_sim->getWorld()->getEntities())
                     {
                         Vec2 mPos((double)event.mouseButton.x, (double)event.mouseButton.y);
                         if (mPos.dist(e.getComponent<CTransform>().p) < e.getComponent<CCircleBody>().r)
@@ -113,7 +113,7 @@ class GUI
                         }
                     }
 
-                    for (auto e: m_sim.getWorld()->getEntities("line"))
+                    for (auto e: m_sim->getWorld()->getEntities("line"))
                     {
                         Vec2 mPos((double)event.mouseButton.x, (double)event.mouseButton.y);
                         auto & line = e.getComponent<CLineBody>();
@@ -136,7 +136,7 @@ class GUI
 
                 if (event.mouseButton.button == sf::Mouse::Right)
                 {
-                    for (auto & e : m_sim.getWorld()->getEntities())
+                    for (auto & e : m_sim->getWorld()->getEntities())
                     {
                         Vec2 mPos((double)event.mouseButton.x, (double)event.mouseButton.y);
                         if (mPos.dist(e.getComponent<CTransform>().p) < e.getComponent<CCircleBody>().r)
@@ -224,7 +224,7 @@ class GUI
         }
 
         // draw circles
-        for (auto e : m_sim.getWorld()->getEntities())
+        for (auto e : m_sim->getWorld()->getEntities())
         {
             if (!e.hasComponent<CCircleShape>()) { continue; }
 
@@ -255,7 +255,7 @@ class GUI
         if (m_sensors)
         {
             float sensorRadius = 2;
-            for (auto & robot : m_sim.getWorld()->getEntities("robot"))
+            for (auto & robot : m_sim->getWorld()->getEntities("robot"))
             {
                 if (!robot.hasComponent<CSensorArray>()) { continue; }
                 auto & sensors = robot.getComponent<CSensorArray>();
@@ -277,7 +277,7 @@ class GUI
                     sensorShape.setOrigin((float)sensor.radius(), (float)sensor.radius());
                     Vec2 pos = sensor.getPosition();
                     sensorShape.setPosition((float)pos.x, (float)pos.y);
-                    double reading = sensor.getReading(m_sim.getWorld());
+                    double reading = sensor.getReading(m_sim->getWorld());
                     if (reading > 0) { sensorShape.setFillColor(sf::Color(255, 255, 255, 80)); }
                     else { sensorShape.setFillColor(sf::Color(0, 255, 255, 80)); }
                     m_window.draw(sensorShape);
@@ -289,7 +289,7 @@ class GUI
                     sensorShape.setOrigin((float)sensor.radius(), (float)sensor.radius());
                     Vec2 pos = sensor.getPosition();
                     sensorShape.setPosition((float)pos.x, (float)pos.y);
-                    double reading = sensor.getReading(m_sim.getWorld());
+                    double reading = sensor.getReading(m_sim->getWorld());
                     if (reading > 0) { sensorShape.setFillColor(sf::Color(255, 255, 255, 80)); }
                     else { sensorShape.setFillColor(sf::Color(c.r, c.g, c.b, 80)); }
                     m_window.draw(sensorShape);
@@ -298,7 +298,7 @@ class GUI
             }
         }
 
-        for (auto & e : m_sim.getWorld()->getEntities("line"))
+        for (auto & e : m_sim->getWorld()->getEntities("line"))
         {
             auto & line = e.getComponent<CLineBody>();
 
@@ -319,7 +319,7 @@ class GUI
 
         if (m_debug)
         {
-            for (auto & collision : m_sim.getCollisions())
+            for (auto & collision : m_sim->getCollisions())
             {
                 drawLine(collision.t1->p, collision.t2->p, sf::Color::Green);
             }
@@ -329,7 +329,7 @@ class GUI
         {
             auto & t = m_selected.getComponent<CTransform>();
             SensorReading reading;
-            SensorsTools::ReadSensorArray(m_selected, m_sim.getWorld(), reading);
+            SensorsTools::ReadSensorArray(m_selected, m_sim->getWorld(), reading);
 
             sf::Text text;
             text.setFont(m_font);
@@ -346,21 +346,21 @@ class GUI
 
         // draw information
         std::stringstream ss;
-        ss << "Num Objs: " << m_sim.getWorld()->getEntities().size() << "\n";
-        ss << "CPU Time: " << m_sim.getComputeTime() << "ms\n";
-        ss << "Max Time: " << m_sim.getComputeTimeMax() << "ms\n";
+        ss << "Num Objs: " << m_sim->getWorld()->getEntities().size() << "\n";
+        ss << "CPU Time: " << m_sim->getComputeTime() << "ms\n";
+        ss << "Max Time: " << m_sim->getComputeTimeMax() << "ms\n";
         ss << "Debug:    " << (m_debug ? "on" : "off");
         m_text.setString(ss.str());
         m_window.draw(m_text);
 
         // draw evaluation
-        double puckEval = Eval::PuckClusterEval(m_sim.getWorld());
+        double puckEval = Eval::PuckClusterEval(m_sim->getWorld());
         std::stringstream ssp;
         ssp << "Puck Eval: " << puckEval;
         sf::Text puckText;
         puckText.setFont(m_font);
         puckText.setCharacterSize(20);
-        puckText.setPosition(5, (float)m_sim.getWorld()->height()-30);
+        puckText.setPosition(5, (float)m_sim->getWorld()->height()-30);
         puckText.setString(ssp.str());
         m_window.draw(puckText);
 
@@ -370,12 +370,12 @@ class GUI
     
 public:
 
-    GUI(Simulator & sim, size_t fps)
+    GUI(std::shared_ptr<Simulator> sim, size_t fps)
         : m_sim(sim)
     {
-        m_window.create(sf::VideoMode((size_t)m_sim.getWorld()->width(), (size_t)m_sim.getWorld()->height()), "CWaggle");
+        m_window.create(sf::VideoMode((size_t)m_sim->getWorld()->width(), (size_t)m_sim->getWorld()->height()), "CWaggle");
         m_window.setFramerateLimit(fps);
-        init(sim.getWorld());
+        init(sim->getWorld());
     }
 
     void update()

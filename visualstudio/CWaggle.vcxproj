@@ -24,6 +24,8 @@
     <ClInclude Include="..\src\GUI.hpp" />
     <ClInclude Include="..\src\EntityAction.hpp" />
     <ClInclude Include="..\src\EntityControllers.hpp" />
+    <ClInclude Include="..\src\QLearning.hpp" />
+    <ClInclude Include="..\src\RLExperiment.hpp" />
     <ClInclude Include="..\src\Sensors.h" />
     <ClInclude Include="..\src\SensorTools.hpp" />
     <ClInclude Include="..\src\Simulator.hpp" />
@@ -105,6 +107,7 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

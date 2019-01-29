@@ -56,19 +56,7 @@ namespace ExampleWorlds
         robot1.addComponent<CCircleBody>(40);
         robot1.addComponent<CCircleShape>(40);
         robot1.addComponent<CColor>(0, 100, 200, 255);
-        robot1.addComponent<CController>(std::make_shared<EntityController_Turn>(2, 0.01));
         
-        auto & sensors = robot1.addComponent<CSensorArray>();
-        sensors.gridSensors.push_back(GridSensor(robot1, 45, 50));
-        sensors.gridSensors.push_back(GridSensor(robot1, 0, 50));
-        sensors.gridSensors.push_back(GridSensor(robot1, -45, 50));
-        sensors.puckSensors.push_back(PuckSensor(robot1, -30, 80, 40));
-        sensors.puckSensors.push_back(PuckSensor(robot1,  30, 80, 40));
-        sensors.puckSensors.push_back(PuckSensor(robot1, 65, 130, 40));
-        sensors.puckSensors.push_back(PuckSensor(robot1, -65, 130, 40));
-        sensors.obstacleSensors.push_back(ObstacleSensor(robot1, 45, 50, 10));
-        sensors.obstacleSensors.push_back(ObstacleSensor(robot1, -45, 50, 10));
-
         Entity robot2 = world->addEntity("robot");
         robot2.addComponent<CTransform>(Vec2(200, 600));
         robot2.addComponent<CCircleBody>(50);
@@ -98,15 +86,15 @@ namespace ExampleWorlds
         return world;
     }
 
-    std::shared_ptr<World> GetGetSquareWorld(Vec2 size, size_t numRobots, double robotSize, size_t numPucks, double puckSize)
+    std::shared_ptr<World> GetGetSquareWorld(size_t width, size_t height, size_t numRobots, double robotSize, size_t numPucks, double puckSize)
     {
-        auto world = std::make_shared<World>(size.x, size.y);
+        auto world = std::make_shared<World>(width, height);
 
         // add the outie robots
         for (size_t r = 0; r < numRobots; r++)
         {
             Entity robot = world->addEntity("robot");
-            Vec2 rPos(rand() % (int)size.x, rand() % (int)size.y);
+            Vec2 rPos(rand() % width, rand() % height);
             robot.addComponent<CTransform>(rPos);
             robot.addComponent<CCircleBody>(robotSize);
             robot.addComponent<CCircleShape>(robotSize);
@@ -131,7 +119,7 @@ namespace ExampleWorlds
         for (size_t r = 0; r < numRobots/2; r++)
         {
             Entity robot = world->addEntity("robot");
-            Vec2 rPos(rand() % (int)size.x, rand() % (int)size.y);
+            Vec2 rPos(rand() % width, rand() % height);
             robot.addComponent<CTransform>(rPos);
             robot.addComponent<CCircleBody>(robotSize);
             robot.addComponent<CCircleShape>(robotSize);
@@ -155,8 +143,8 @@ namespace ExampleWorlds
         // add the pucks
         for (size_t r = 0; r < numPucks; r++)
         {
-            int rWidth = rand() % (int)(size.x - 8 * puckSize);
-            int rHeight = rand() % (int)(size.y - 8 * puckSize);
+            int rWidth = rand() % (int)(width - 8 * puckSize);
+            int rHeight = rand() % (int)(height - 8 * puckSize);
             Vec2 pPos(4*puckSize + rWidth, 4*puckSize + rHeight);
 
             Entity puck = world->addEntity("puck");

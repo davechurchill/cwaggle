@@ -248,9 +248,14 @@ public:
         collisions();
     }
 
+    // TODO: remove this, make sim world only on constructor
     void setWorld(const std::shared_ptr<World> world)
     {
         m_world = world;
+        m_collisions.clear();
+        m_fakeTransforms.clear();
+        m_fakeBodies.clear();
+        m_collisionEntities.clear();
     }
 
     std::vector<CollisionData> & getCollisions()

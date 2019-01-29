@@ -39,6 +39,12 @@
     <ClInclude Include="..\src\SensorTools.hpp">
       <Filter>sensors</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\QLearning.hpp">
+      <Filter>rl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\RLExperiment.hpp">
+      <Filter>rl</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ecs">
@@ -49,6 +55,9 @@
     </Filter>
     <Filter Include="control">
       <UniqueIdentifier>{5d7e979a-4d56-42a7-9856-f50c6af5cf3a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rl">
+      <UniqueIdentifier>{8a136bbb-1727-4089-bea4-56838e87003c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
