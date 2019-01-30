@@ -71,15 +71,15 @@ size_t ComputeHash(SensorReading & reading)
 {
     size_t sum = 0;
 
-    sum += (reading.leftPucks == 0)         ? 0 : (1 << 0);
-    sum += (reading.rightPucks == 0)        ? 0 : (1 << 1);
-    sum += (reading.leftObstacle == 0)      ? 0 : (1 << 2);
-    sum += (reading.rightObstacle == 0)     ? 0 : (1 << 3);
-    sum += (size_t)(reading.leftNest * 15)      * (1 << 4);
-    sum += (size_t)(reading.midNest * 15)       * (1 << 8);
-    sum += (size_t)(reading.rightNest * 15)     * (1 << 12);
+    sum += (reading.leftPucks == 0)             ? 0 : (1 << 0);
+    sum += (reading.rightPucks == 0)            ? 0 : (1 << 1);
+    sum += (reading.leftObstacle == 0)          ? 0 : (1 << 2);
+    sum += (reading.rightObstacle == 0)         ? 0 : (1 << 3);
+    sum += (size_t)(reading.midNest * 15)           * (1 << 4);
+    sum += (reading.leftNest < reading.midNest) ? 0 : (1 << 8);
+    sum += (reading.rightNest < reading.midNest) ? 0 : (1 << 9);
 
-    if (sum >= (1 << 16)) { std::cout << "HASH ERROR: " << sum << "\n"; }
+    if (sum >= (1 << 10)) { std::cout << "HASH ERROR: " << sum << "\n"; }
     return sum;
 }
 
@@ -183,7 +183,7 @@ public:
                 //action = getAction(0);
             }
 
-            if (m_simulationSteps < 2000000 && rand() / (double)RAND_MAX < 0.5)
+            if (rand() / (double)RAND_MAX < 0.2)
             {
                 action = getAction(rand() % 4);
             }
