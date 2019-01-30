@@ -45,6 +45,9 @@
     <ClInclude Include="..\src\RLExperiment.hpp">
       <Filter>rl</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\Eval.hpp">
+      <Filter>rl</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ecs">

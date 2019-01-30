@@ -19,6 +19,7 @@
     <ClInclude Include="..\src\Entity.hpp" />
     <ClInclude Include="..\src\EntityManager.hpp" />
     <ClInclude Include="..\src\EntityMemoryPool.hpp" />
+    <ClInclude Include="..\src\Eval.hpp" />
     <ClInclude Include="..\src\ExampleGrids.hpp" />
     <ClInclude Include="..\src\ExampleWorlds.hpp" />
     <ClInclude Include="..\src\GUI.hpp" />

@@ -329,7 +329,7 @@ class GUI
         {
             auto & t = m_selected.getComponent<CTransform>();
             SensorReading reading;
-            SensorsTools::ReadSensorArray(m_selected, m_sim->getWorld(), reading);
+            SensorTools::ReadSensorArray(m_selected, m_sim->getWorld(), reading);
 
             sf::Text text;
             text.setFont(m_font);
@@ -354,7 +354,7 @@ class GUI
         m_window.draw(m_text);
 
         // draw evaluation
-        double puckEval = Eval::PuckClusterEval(m_sim->getWorld());
+        double puckEval = Eval::PuckAvgThresholdDiff(m_sim->getWorld(), 0.6, 0.8);
         std::stringstream ssp;
         ssp << "Puck Eval: " << puckEval;
         sf::Text puckText;

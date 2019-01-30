@@ -19,6 +19,10 @@ class QLearning
 
     std::vector<size_t> m_maxActions;
 
+public:
+
+    QLearning() {}
+
     QLearning(size_t numStates, size_t numActions, double alpha, double gamma, double initialQ) 
         : m_numStates   (numStates)
         , m_numActions  (numActions)

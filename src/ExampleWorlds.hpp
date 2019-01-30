@@ -111,8 +111,6 @@ namespace ExampleWorlds
             sensors.puckSensors.push_back(PuckSensor(robot, -60, robotSize * 7, robotSize * 2));
             sensors.obstacleSensors.push_back(ObstacleSensor(robot, 45, robotSize, robotSize/4));
             sensors.obstacleSensors.push_back(ObstacleSensor(robot, -45, robotSize, robotSize/4));
-
-            robot.addComponent<CController>(std::make_shared<EntityController_OrbitalConstruction>(robot, world));
         }
 
         // add the innie robots
@@ -136,8 +134,6 @@ namespace ExampleWorlds
             sensors.puckSensors.push_back(PuckSensor(robot, -70, robotSize * 6.5, robotSize * 2));
             sensors.obstacleSensors.push_back(ObstacleSensor(robot, 45, robotSize, robotSize/4));
             sensors.obstacleSensors.push_back(ObstacleSensor(robot, -45, robotSize, robotSize/4));
-
-            robot.addComponent<CController>(std::make_shared<EntityController_OrbitalConstruction>(robot, world));
         }
 
         // add the pucks
@@ -154,7 +150,7 @@ namespace ExampleWorlds
             puck.addComponent<CColor>(200, 44, 44, 255);
         }
         
-        world->setGrid(ExampleGrids::GetInverseCenterDistanceGrid(128, 128));
+        world->setGrid(ExampleGrids::GetInverseCenterDistanceGrid(64, 64));
 
         return world;
     }

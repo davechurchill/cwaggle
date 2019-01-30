@@ -119,10 +119,10 @@ int main(int argc, char ** argv)
     // PhysicsPlayExample(argc, argv);
 
     // Robots guided by orbital construction algorithm
-    OrbitalConstructionExample(argc, argv);
+    // OrbitalConstructionExample(argc, argv);
 
     // Do a reinforcement learning experiment
-    // RLExperiments::MainRLExperiment();
+    RLExperiments::MainRLExperiment(argc, argv);
 
     return 0;
 }

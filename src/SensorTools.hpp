@@ -28,7 +28,7 @@ struct SensorReading
     }
 };
 
-namespace SensorsTools
+namespace SensorTools
 {
     void ReadSensorArray(Entity e, std::shared_ptr<World> world, SensorReading & reading)
     {
