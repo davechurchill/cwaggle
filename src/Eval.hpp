@@ -33,12 +33,11 @@ namespace Eval
     {
         double sum = 0;
         auto & grid = world->getGrid();
-        double mid = t2 - t1;
         for (auto e : world->getEntities("puck"))
         {
             auto & t = e.getComponent<CTransform>();
-            size_t gridX = grid.width() * (t.p.x / world->width());
-            size_t gridY = grid.height() * (t.p.y / world->height());
+            size_t gridX = (size_t)(grid.width() * (t.p.x / world->width()));
+            size_t gridY = (size_t)(grid.height() * (t.p.y / world->height()));
             double gridVal = grid.get(gridX, gridY);
 
             double diff = 0;

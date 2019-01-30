@@ -4,7 +4,7 @@ numRobots      20
 robotRadius    10
 numPucks       250
 puckRadius     10
-simTimeStep    1.0
+simTimeStep    1
 renderSkip     1
 forwardSpeed   2.0
 angularSpeed   0.3

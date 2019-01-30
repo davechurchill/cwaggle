@@ -122,7 +122,7 @@ int main(int argc, char ** argv)
     // OrbitalConstructionExample(argc, argv);
 
     // Do a reinforcement learning experiment
-    RLExperiments::MainRLExperiment(argc, argv);
+    RLExperiments::MainRLExperiment();
 
     return 0;
 }

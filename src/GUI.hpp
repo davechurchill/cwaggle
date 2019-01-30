@@ -8,7 +8,6 @@
 #include "Simulator.hpp"
 #include "ExampleWorlds.hpp"
 #include "SensorTools.hpp"
-#include "Eval.hpp"
 
 class GUI
 {
@@ -25,12 +24,13 @@ class GUI
     bool                m_debug = false;
     bool                m_grid = false;
     bool                m_sensors = false;
-
+    std::string         m_status = "";
+    
     std::vector<sf::RectangleShape> m_gridRectangles;
 
-    void init(std::shared_ptr<World> world)
+    void init(std::shared_ptr<Simulator> sim)
     {
-        m_sim->setWorld(world);
+        m_sim = sim;
         m_font.loadFromFile("fonts/cour.ttf");
         m_text.setFont(m_font);
         m_text.setCharacterSize(24);
@@ -82,16 +82,6 @@ class GUI
                 switch (event.key.code)
                 {
                     case sf::Keyboard::Escape: exit(0); break;
-                    case sf::Keyboard::Num1:   init(ExampleWorlds::GetGridWorld720(1)); break;
-                    case sf::Keyboard::Num2:   init(ExampleWorlds::GetGridWorld720(2)); break;
-                    case sf::Keyboard::Num3:   init(ExampleWorlds::GetGridWorld720(3)); break;
-                    case sf::Keyboard::Num4:   init(ExampleWorlds::GetGridWorld720(4)); break;
-                    case sf::Keyboard::Num5:   init(ExampleWorlds::GetGridWorld720(5)); break;
-                    case sf::Keyboard::Num6:   init(ExampleWorlds::GetGridWorld720(6)); break;
-                    case sf::Keyboard::Num7:   init(ExampleWorlds::GetGridWorld720(7)); break;
-                    case sf::Keyboard::Num8:   init(ExampleWorlds::GetGridWorld720(8)); break;
-                    case sf::Keyboard::Num9:   init(ExampleWorlds::GetGridWorld720(9)); break;
-                    case sf::Keyboard::Num0:   init(ExampleWorlds::GetGetSquareWorld(800, 800, 20, 10, 250, 10)); break;
                     case sf::Keyboard::D:      m_debug = !m_debug; break;
                     case sf::Keyboard::G:      m_grid = !m_grid; break;
                     case sf::Keyboard::S:      m_sensors = !m_sensors; break;
@@ -197,6 +187,7 @@ class GUI
             }
         }
     }
+
 
     void drawLine(Vec2 p1, Vec2 p2, sf::Color color)
     {
@@ -349,20 +340,17 @@ class GUI
         ss << "Num Objs: " << m_sim->getWorld()->getEntities().size() << "\n";
         ss << "CPU Time: " << m_sim->getComputeTime() << "ms\n";
         ss << "Max Time: " << m_sim->getComputeTimeMax() << "ms\n";
-        ss << "Debug:    " << (m_debug ? "on" : "off");
         m_text.setString(ss.str());
         m_window.draw(m_text);
 
         // draw evaluation
-        double puckEval = Eval::PuckAvgThresholdDiff(m_sim->getWorld(), 0.6, 0.8);
-        std::stringstream ssp;
-        ssp << "Puck Eval: " << puckEval;
-        sf::Text puckText;
-        puckText.setFont(m_font);
-        puckText.setCharacterSize(20);
-        puckText.setPosition(5, (float)m_sim->getWorld()->height()-30);
-        puckText.setString(ssp.str());
-        m_window.draw(puckText);
+        sf::Text text;
+        text.setFont(m_font);
+        text.setString(m_status);
+        text.setCharacterSize(20);
+        text.setPosition(5, (float)m_sim->getWorld()->height() - text.getLocalBounds().height-5);
+        
+        m_window.draw(text);
 
         m_window.display();
     }
@@ -375,7 +363,17 @@ public:
     {
         m_window.create(sf::VideoMode((size_t)m_sim->getWorld()->width(), (size_t)m_sim->getWorld()->height()), "CWaggle");
         m_window.setFramerateLimit(fps);
-        init(sim->getWorld());
+        init(sim);
+    }
+
+    void setStatus(const std::string & str)
+    {
+        m_status = str;
+    }
+
+    void setSim(std::shared_ptr<Simulator> sim)
+    {
+        init(sim);
     }
 
     void update()

@@ -8,6 +8,7 @@ class QLearning
     size_t m_numStates  = 0;
     size_t m_numActions = 0;
     size_t m_updates    = 0;
+    size_t m_visited    = 0;
     double m_alpha      = 0;
     double m_gamma      = 0;
     double m_initialQ   = 0;
@@ -52,7 +53,9 @@ public:
 
     size_t selectMostChosenAction(size_t s) 
     {
-        return std::max_element(m_N[s].begin(), m_N[s].end()) - m_N[s].begin();
+        auto maxVisits = std::max_element(m_N[s].begin(), m_N[s].end());
+        if (*maxVisits == 0) { std::cout << "Warning, state unvisited: " << s << "\n"; }
+        return maxVisits - m_N[s].begin();
     }
 
     // Update the value estimate of Q[s][a] based on a given sample
@@ -60,6 +63,8 @@ public:
     void updateValue(size_t s, size_t a, double r, size_t ns) 
     {
         ++m_updates;
+        size_t maxVisited = *std::max_element(m_N[s].begin(), m_N[s].end());
+        if (maxVisited == 0) { m_visited++; }
         ++m_N[s][a];
         double maxNSQ = *std::max_element(m_Q[ns].begin(), m_Q[ns].end());
         m_Q[s][a] += m_alpha * (r + m_gamma*maxNSQ - m_Q[s][a]);
@@ -84,5 +89,15 @@ public:
         for (size_t a=0; a<m_maxActions.size(); ++a) {
             m_P[s][m_maxActions[a]] = 1.0 / m_maxActions.size();
         }
+    }
+
+    double getCoverage() const
+    {
+        return (double)m_visited / (m_numStates);
+    }
+
+    size_t numUpdates() const
+    {
+        return m_updates;
     }
 };

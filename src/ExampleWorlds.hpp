@@ -152,6 +152,7 @@ namespace ExampleWorlds
         
         world->setGrid(ExampleGrids::GetInverseCenterDistanceGrid(64, 64));
 
+        world->update();
         return world;
     }
 };
