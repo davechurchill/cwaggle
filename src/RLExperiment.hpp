@@ -114,6 +114,8 @@ class RLExperiment
         );
 
         m_sim = std::make_shared<Simulator>(world);
+
+        m_previousEval = Eval::PuckAvgThresholdDiff(m_sim->getWorld(), m_config.occ.thresholds[0], m_config.occ.thresholds[1]);
         
         if (m_gui)
         {
@@ -154,7 +156,7 @@ public:
         m_QL = QLearning(m_config.numStates, m_config.numActions, m_config.alpha, m_config.gamma, m_config.initialQ);
 
         resetSimulator();
-        m_previousEval = Eval::PuckAvgThresholdDiff(m_sim->getWorld(), m_config.occ.thresholds[0], m_config.occ.thresholds[1]);
+        
 
         m_stepsUntilRLUpdate = m_config.batchSize;
     }
@@ -173,7 +175,18 @@ public:
 
             // get the action that should be done for this entity
             EntityAction action;
-            action = EntityControllers::OrbitalConstruction(robot, m_sim->getWorld(), reading, m_config.occ);
+            //action = EntityControllers::OrbitalConstruction(robot, m_sim->getWorld(), reading, m_config.occ);
+            action = getAction(m_QL.selectActionFromPolicy(ComputeHash(reading)));
+
+            if (reading.leftNest == 0 || reading.rightNest == 0 || reading.midNest == 0)
+            {
+                //action = getAction(0);
+            }
+
+            if (m_simulationSteps < 2000000 && rand() / (double)RAND_MAX < 0.5)
+            {
+                action = getAction(rand() % 4);
+            }
 
             /*if (m_simulationSteps < 50000)
             {
@@ -222,11 +235,16 @@ public:
             double eval = Eval::PuckAvgThresholdDiff(m_sim->getWorld(), m_config.occ.thresholds[0], m_config.occ.thresholds[1]);
             double reward = eval - m_previousEval;
 
+            if (reward <= 0) reward -= 1;
+
             // perform the Q-learning update
-            for (size_t i = 0; i < m_states.size(); i++)
+            //if (reward != 0)
             {
-                m_QL.updateValue(m_states[i], m_actions[i], reward, m_nextStates[i]);
-                m_QL.updatePolicy(m_states[i]);
+                for (size_t i = 0; i < m_states.size(); i++)
+                {
+                    m_QL.updateValue(m_states[i], m_actions[i], reward, m_nextStates[i]);
+                    m_QL.updatePolicy(m_states[i]);
+                }
             }
 
             m_previousEval = eval;
@@ -266,7 +284,7 @@ public:
                 m_gui->update();
             }
 
-            if (eval > 0.96)
+            if (eval > 0.92)
             {
                 resetSimulator();
             }

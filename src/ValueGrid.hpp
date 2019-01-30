@@ -22,6 +22,7 @@ public:
 
     inline double get(size_t x, size_t y) const
     {
+        if (x < 0 || y < 0 || x >= m_width || y >= m_height) return 0;
         size_t index = getIndex(x, y);
 
         if (index >= m_values.size()) return 0;

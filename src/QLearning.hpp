@@ -12,7 +12,7 @@ class QLearning
     double m_alpha      = 0;
     double m_gamma      = 0;
     double m_initialQ   = 0;
-    double m_diffThresh = 0.001;
+    double m_diffThresh = 0;
 
     std::vector<std::vector<double>> m_Q;
     std::vector<std::vector<double>> m_P;
@@ -41,9 +41,10 @@ public:
     size_t selectActionFromPolicy(size_t s)
     {
         double maxQ = *std::max_element(m_Q[s].begin(), m_Q[s].end());
+
         m_maxActions.clear();
         for (size_t a=0; a<m_Q[s].size(); a++) {
-            if (fabs(m_Q[s][a] - maxQ) < m_diffThresh) {
+            if (m_Q[s][a] == maxQ) {
                 m_maxActions.push_back(a); 
             }
         }
@@ -63,6 +64,7 @@ public:
     void updateValue(size_t s, size_t a, double r, size_t ns) 
     {
         ++m_updates;
+        double prev = m_Q[s][a];
         size_t maxVisited = *std::max_element(m_N[s].begin(), m_N[s].end());
         if (maxVisited == 0) { m_visited++; }
         ++m_N[s][a];
