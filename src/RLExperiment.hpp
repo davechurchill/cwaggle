@@ -104,6 +104,7 @@ class RLExperiment
     double                      m_simulationTime = 0;
     Timer                       m_simTimer;
     double                      m_previousEval = 0;
+    std::ofstream               m_fout;
 
     std::stringstream           m_status;
 
@@ -159,13 +160,26 @@ public:
         m_QL[0] = QLearning(m_config.numStates, m_config.numActions, m_config.alpha, m_config.gamma, m_config.initialQ);
         m_QL[1] = QLearning(m_config.numStates, m_config.numActions, m_config.alpha, m_config.gamma, m_config.initialQ);
 
+        std::stringstream ss;
+        ss << "gnuplot/" << config.numRobots << ".txt";
+
+        m_fout = std::ofstream(ss.str());
+
         resetSimulator();
         m_stepsUntilRLUpdate = m_config.batchSize;
+        
     }
     
     void doSimulationStep()
     {
+        if (m_simulationSteps % 1000 == 0)
+        {
+            m_fout << m_simulationSteps << " " << m_previousEval << "\n";
+            m_fout.flush();
+        }
+        
         ++m_simulationSteps;
+
         SensorReading reading;
 
         // control robots that have controllers

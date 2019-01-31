@@ -1,0 +1,8 @@
+set xlabel "Simulation Steps"
+set ylabel "Cluster Evaluation"
+plot "1.txt" with lines, \
+     "2.txt" with lines, \
+     "4.txt" with lines, \
+     "8.txt" with lines
+pause 1
+reread

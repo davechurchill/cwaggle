@@ -1,11 +1,11 @@
 width          800
 height         800
-numRobots      2
+numRobots      8
 robotRadius    10
 numPucks       250
 puckRadius     10
 simTimeStep    1
-renderSkip     100
+renderSkip     1000
 forwardSpeed   2.0
 angularSpeed   0.3
 outieThreshold 0.6
