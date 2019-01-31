@@ -23,10 +23,10 @@ namespace Eval
 
         for (auto e : world->getEntities("puck"))
         {
-            ssd += e.getComponent<CTransform>().p.distSq(averagePosition);
+            ssd += e.getComponent<CTransform>().p.dist(averagePosition);
         }
 
-        return ssd;
+        return 800 - (ssd / world->getEntities("puck").size());
     }
 
     double PuckAvgThresholdDiff(std::shared_ptr<World> world, double t1, double t2)

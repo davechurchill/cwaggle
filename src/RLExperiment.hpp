@@ -29,6 +29,7 @@ struct RLExperimentConfig
     double initialQ     = 0.0;
     double alpha        = 0.1;
     double gamma        = 0.9;
+    double epsilon      = 0.1;
 
     std::vector<double> angles = { };
 
@@ -63,6 +64,7 @@ struct RLExperimentConfig
             else if (token == "initialQ")       { fin >> initialQ; }
             else if (token == "alpha")          { fin >> alpha; }
             else if (token == "gamma")          { fin >> gamma; }
+            else if (token == "epsilon")        { fin >> epsilon; }
         }
     }
 };
@@ -87,11 +89,12 @@ size_t ComputeHash(SensorReading & reading)
 class RLExperiment
 {
     RLExperimentConfig          m_config;
-    QLearning                   m_QL;
+    QLearning                   m_QL[2];
 
     std::shared_ptr<GUI>        m_gui;
     std::shared_ptr<Simulator>  m_sim;
 
+    std::vector<Entity>         m_robotsActed;
     std::vector<size_t>         m_states;
     std::vector<size_t>         m_actions;
     std::vector<size_t>         m_nextStates;
@@ -153,11 +156,10 @@ public:
     RLExperiment(const RLExperimentConfig & config)
         : m_config(config)
     {
-        m_QL = QLearning(m_config.numStates, m_config.numActions, m_config.alpha, m_config.gamma, m_config.initialQ);
+        m_QL[0] = QLearning(m_config.numStates, m_config.numActions, m_config.alpha, m_config.gamma, m_config.initialQ);
+        m_QL[1] = QLearning(m_config.numStates, m_config.numActions, m_config.alpha, m_config.gamma, m_config.initialQ);
 
         resetSimulator();
-        
-
         m_stepsUntilRLUpdate = m_config.batchSize;
     }
     
@@ -167,45 +169,30 @@ public:
         SensorReading reading;
 
         // control robots that have controllers
-        for (auto & robot : m_sim->getWorld()->getEntities("robot"))
+        for (auto robot : m_sim->getWorld()->getEntities("robot"))
         {
             // record the robot sensor state into the batch
             SensorTools::ReadSensorArray(robot, m_sim->getWorld(), reading);
             m_states.push_back(ComputeHash(reading));
+            size_t robotType = robot.getComponent<CRobotType>().type;
 
             // get the action that should be done for this entity
             EntityAction action;
-            //action = EntityControllers::OrbitalConstruction(robot, m_sim->getWorld(), reading, m_config.occ);
-            action = getAction(m_QL.selectActionFromPolicy(ComputeHash(reading)));
 
-            if (reading.leftNest == 0 || reading.rightNest == 0 || reading.midNest == 0)
-            {
-                //action = getAction(0);
-            }
-
-            if (rand() / (double)RAND_MAX < 0.2)
+            // epsilon-greedy action selection
+            if ((rand() / (double)RAND_MAX) < m_config.epsilon)
             {
                 action = getAction(rand() % 4);
             }
-
-            /*if (m_simulationSteps < 50000)
-            {
-                action = EntityControllers::OrbitalConstruction(robot, m_sim->getWorld(), reading, m_config.occ);
-            }
             else
             {
-                if (rand() / (double)RAND_MAX < 0.2)
-                {
-                    action = getAction(rand() % 4);
-                }
-                else
-                {
-                    action = getAction(m_QL.selectMostChosenAction(ComputeHash(reading)));
-                }
-            }*/
+                action = getAction(m_QL[robotType].selectActionFromPolicy(ComputeHash(reading)));
+                // action = EntityControllers::OrbitalConstruction(robot, m_sim->getWorld(), reading, m_config.occ);
+            }
 
             // record the action that the robot did into the batch
             m_actions.push_back(getActionIndex(action));
+            m_robotsActed.push_back(robot);
 
             // have the action apply its effects to the entity
             action.doAction(robot, m_config.simTimeStep);
@@ -242,8 +229,9 @@ public:
             {
                 for (size_t i = 0; i < m_states.size(); i++)
                 {
-                    m_QL.updateValue(m_states[i], m_actions[i], reward, m_nextStates[i]);
-                    m_QL.updatePolicy(m_states[i]);
+                    size_t robotType = m_robotsActed[i].getComponent<CRobotType>().type;
+                    m_QL[robotType].updateValue(m_states[i], m_actions[i], reward, m_nextStates[i]);
+                    m_QL[robotType].updatePolicy(m_states[i]);
                 }
             }
 
@@ -253,6 +241,7 @@ public:
             m_states.clear();
             m_actions.clear();
             m_nextStates.clear();
+            m_robotsActed.clear();
             m_stepsUntilRLUpdate = m_config.batchSize;
         }
     }
@@ -276,7 +265,8 @@ public:
                 m_status = std::stringstream();
                 m_status << "Sim Steps:  " << m_simulationSteps << "\n";
                 m_status << "Sim / Sec:  " << m_simulationSteps * 1000 / m_simulationTime << "\n";
-                m_status << "Q Coverage: " << m_QL.getCoverage() << "\n";
+                m_status << "QO Coverage: " << m_QL[0].getCoverage() << "\n";
+                m_status << "Q1 Coverage: " << m_QL[1].getCoverage() << "\n";
                 m_status << "Puck Eval:  " << eval << "\n";
                 m_gui->setStatus(m_status.str());
 

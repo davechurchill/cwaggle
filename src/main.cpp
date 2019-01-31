@@ -116,13 +116,13 @@ void OrbitalConstructionExample(int argc, char ** argv)
 int main(int argc, char ** argv)
 {
     // Drag around large robots that puck around pucks
-    // PhysicsPlayExample(argc, argv);
+    PhysicsPlayExample(argc, argv);
 
     // Robots guided by orbital construction algorithm
     // OrbitalConstructionExample(argc, argv);
 
     // Do a reinforcement learning experiment
-    RLExperiments::MainRLExperiment();
+    // RLExperiments::MainRLExperiment();
 
     return 0;
 }

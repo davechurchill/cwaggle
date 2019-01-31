@@ -1,11 +1,11 @@
 width          800
 height         800
-numRobots      1
+numRobots      2
 robotRadius    10
 numPucks       250
 puckRadius     10
 simTimeStep    1
-renderSkip     2000
+renderSkip     100
 forwardSpeed   2.0
 angularSpeed   0.3
 outieThreshold 0.6
@@ -13,6 +13,7 @@ innieThreshold 0.8
 numStates      1024
 numActions     4
 batchSize      1
-initialQ       0.0
-alpha          0.1
+initialQ       1.0
+alpha          0.2
 gamma          0.9
+epsilon        0.2
