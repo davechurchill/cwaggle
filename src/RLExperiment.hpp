@@ -2,6 +2,8 @@
 
 #include <memory>
 #include <fstream>
+#include <string>
+
 #include "GUI.hpp"
 #include "SensorTools.hpp"
 #include "QLearning.hpp"
@@ -30,6 +32,14 @@ struct RLExperimentConfig
     double alpha        = 0.1;
     double gamma        = 0.9;
     double epsilon      = 0.1;
+
+    size_t writePlotSkip    = 0;
+    std::string plotFile   = "";
+    size_t saveQSkip = 0;
+    std::string saveQFile[2];
+    size_t loadQ = 0;
+    std::string loadQFile[2];
+    double resetEval    = 0;
 
     std::vector<double> angles = { };
 
@@ -65,6 +75,13 @@ struct RLExperimentConfig
             else if (token == "alpha")          { fin >> alpha; }
             else if (token == "gamma")          { fin >> gamma; }
             else if (token == "epsilon")        { fin >> epsilon; }
+            else if (token == "resetEval")      { fin >> resetEval; }
+            else if (token == "writePlotSkip")  { fin >> writePlotSkip; }
+            else if (token == "plotFilename")   { fin >> plotFile; }
+            else if (token == "saveQSkip")      { fin >> saveQSkip; }
+            else if (token == "saveQFilename")  { fin >> saveQFile[0] >> saveQFile[1]; }
+            else if (token == "loadQFromFile")  { fin >> loadQ; }
+            else if (token == "loadQFilename")  { fin >> loadQFile[0] >> loadQFile[1]; }
         }
     }
 };
@@ -160,10 +177,16 @@ public:
         m_QL[0] = QLearning(m_config.numStates, m_config.numActions, m_config.alpha, m_config.gamma, m_config.initialQ);
         m_QL[1] = QLearning(m_config.numStates, m_config.numActions, m_config.alpha, m_config.gamma, m_config.initialQ);
 
-        std::stringstream ss;
-        ss << "gnuplot/" << config.numRobots << ".txt";
+        if (m_config.loadQ)
+        {
+            m_QL[0].load(m_config.loadQFile[0]);
+            m_QL[1].load(m_config.loadQFile[1]);
+        }
 
-        m_fout = std::ofstream(ss.str());
+        if (m_config.writePlotSkip)
+        {
+            m_fout = std::ofstream(m_config.plotFile);
+        }
 
         resetSimulator();
         m_stepsUntilRLUpdate = m_config.batchSize;
@@ -172,12 +195,18 @@ public:
     
     void doSimulationStep()
     {
-        if (m_simulationSteps % 1000 == 0)
+        if (m_config.writePlotSkip && m_simulationSteps % m_config.writePlotSkip == 0)
         {
             m_fout << m_simulationSteps << " " << m_previousEval << "\n";
             m_fout.flush();
         }
         
+        if (m_config.saveQSkip && m_simulationSteps % m_config.saveQSkip == 0)
+        {
+            m_QL[0].save(m_config.saveQFile[0]);
+            m_QL[1].save(m_config.saveQFile[1]);
+        }
+
         ++m_simulationSteps;
 
         SensorReading reading;
@@ -288,7 +317,7 @@ public:
                 m_gui->update();
             }
 
-            if (eval > 0.92)
+            if (m_config.resetEval && (eval > m_config.resetEval))
             {
                 resetSimulator();
             }

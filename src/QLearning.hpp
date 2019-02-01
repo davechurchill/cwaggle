@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <algorithm>
+#include <fstream>
 
 class QLearning 
 {
@@ -37,6 +38,34 @@ public:
      
     }
 
+    void save(const std::string & filename)
+    {
+        std::ofstream fout(filename);
+        fout << m_numStates << " " << m_numActions << " " << m_updates << " " << m_alpha << " " << m_gamma << " " << m_initialQ << " " << m_updates << " " << m_visited << " \n";
+
+        for (size_t s = 0; s < m_numStates; s++)
+        {
+            for (size_t a = 0; a < m_numActions; a++)
+            {
+                fout << m_Q[s][a] << " " << m_N[s][a] << " " << m_P[s][a] << " ";
+            }
+        }
+    }
+
+    void load(const std::string & filename)
+    {
+        std::ifstream fin(filename);
+        fin >> m_numStates >> m_numActions >> m_updates >> m_alpha >> m_gamma >> m_initialQ >> m_updates >> m_visited;
+
+        for (size_t s = 0; s < m_numStates; s++)
+        {
+            for (size_t a = 0; a < m_numActions; a++)
+            {
+                fin >> m_Q[s][a] >> m_N[s][a] >> m_P[s][a];
+            }
+        }
+    }
+
     // Select an action from our policy at a given state s
     size_t selectActionFromPolicy(size_t s)
     {
@@ -64,7 +93,6 @@ public:
     void updateValue(size_t s, size_t a, double r, size_t ns) 
     {
         ++m_updates;
-        double prev = m_Q[s][a];
         size_t maxVisited = *std::max_element(m_N[s].begin(), m_N[s].end());
         if (maxVisited == 0) { m_visited++; }
         ++m_N[s][a];

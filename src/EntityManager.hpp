@@ -33,6 +33,14 @@ public:
         m_entitiesToRemove.reserve(MaxEntities);
     }
 
+    ~EntityManager()
+    {
+        for (auto e : m_entities)
+        {
+            e.setActive(false);
+        }
+    }
+
     void update()
     {
         if (m_entitiesToAdd.size() > 0)
@@ -42,12 +50,12 @@ public:
             {
                 // add it to the vector of all entities
                 m_entities.push_back(e);
+                assert(m_entities.size() < MaxEntities);
 
                 // add it to the entity map in the correct place
                 // map[key] will create an element at 'key' if it does not already exist
                 //          therefore we are not in danger of adding to a vector that doesn't exist
-                const std::string & tag = e.tag();
-                m_entityMap[tag].push_back(e);
+                m_entityMap[e.tag()].push_back(e);
             }
 
             // clear the temporary vector since we have added everything
