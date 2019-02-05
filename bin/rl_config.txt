@@ -1,11 +1,11 @@
 width          800
 height         800
-numRobots      8
+numRobots      1
 robotRadius    10
 numPucks       250
 puckRadius     10
 simTimeStep    1
-renderSkip     5
+renderSkip     1000
 forwardSpeed   2.0
 angularSpeed   0.3
 outieThreshold 0.6
@@ -20,7 +20,7 @@ epsilon        0.1
 resetEval      0.94
 writePlotSkip  0
 plotFilename   gnuplot/1.txt
-saveQSkip	   100000
+saveQSkip      100000
 saveQFilename  gnuplot/q_out.txt gnuplot/q_in.txt
 loadQFromFile  0
 loadQFilename  gnuplot/q_out.txt gnuplot/q_in.txt

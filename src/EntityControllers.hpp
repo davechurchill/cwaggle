@@ -43,7 +43,7 @@ class EntityController_OrbitalConstruction : public EntityController
     std::shared_ptr<World> m_world;
     Entity          m_robot;
     SensorReading   m_reading;
-    double          m_threshold[2] = { 0.7, 0.8 };
+    double          m_threshold[2] = { 0.65, 0.8 };
 
 public:
 

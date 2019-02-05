@@ -61,6 +61,12 @@ void OrbitalConstructionExample(int argc, char ** argv)
     //auto world = ExampleWorlds::GetGridWorld720(2);
     auto world = ExampleWorlds::GetGetSquareWorld(800, 800, 20, 10, 250, 10);
 
+    // add orbital controllers to all the robots
+    for (auto e : world->getEntities("robot"))
+    {
+        e.addComponent<CController>(std::make_shared<EntityController_OrbitalConstruction>(e, world));
+    }
+
     // create a new simulator with the given world
     auto simulator = std::make_shared<Simulator>(world);
 
