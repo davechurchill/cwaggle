@@ -12,7 +12,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\main.cpp" />
-    <ClCompile Include="..\src\Sensors.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Components.hpp" />
