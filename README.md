@@ -3,12 +3,12 @@ CWaggle Robot Simulator
 
 See main.cpp for brief tutorial
 
-Run this command from the cwaggle/bin directory:
+Run `make` from the cwaggle root directory to build 3 executables in the bin directory:
 
-`g++ ../src/example/main.cpp -I../include/ -std=c++14 -o ./cwaggle -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio -Wall`
+- cwaggle_exaple: drag circles / lines around to demonstrate physics
+- cwaggle_orbital: demo of Andrew Vardy's orbital construction algorithm
+- cwaggle_rl: demo of our reinforcement learning orbital construction algorithm
 
-`./cwaggle N`
-
-Where N is the number of simulation ticks per GUI render (higher means faster)
+Run either program to see a demo of the cwaggle system
 
 Inspired by the JS Robot simulator 'Waggle' by Andrew Vardy
