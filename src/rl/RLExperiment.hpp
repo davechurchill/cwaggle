@@ -4,11 +4,11 @@
 #include <fstream>
 #include <string>
 
+#include "CWaggle.h"
 #include "GUI.hpp"
-#include "SensorTools.hpp"
 #include "QLearning.hpp"
 #include "Eval.hpp"
-#include "Timer.hpp"
+#include "OrbitalController.hpp"
 
 struct RLExperimentConfig
 {

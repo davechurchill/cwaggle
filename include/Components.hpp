@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include <bitset>
 #include <array>
+#include <memory>
 
 #include "Vec2.hpp"
 

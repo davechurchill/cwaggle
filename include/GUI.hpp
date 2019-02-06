@@ -35,7 +35,7 @@ class GUI
         m_text.setFont(m_font);
         m_text.setCharacterSize(24);
         m_text.setPosition(5, 5);
-        m_text.setFillColor(sf::Color::Yellow);
+        //m_text.setFillColor(sf::Color::Yellow);
 
         // create the grid rectangle shapes
         auto & grid = m_sim->getWorld()->getGrid();

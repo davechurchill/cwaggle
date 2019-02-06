@@ -11,8 +11,8 @@ class EntityController_OrbitalConstruction : public EntityController
 public:
 
     EntityController_OrbitalConstruction(Entity robot, std::shared_ptr<World> world)
-        : m_robot(robot)
-        , m_world(world)
+        : m_world(world)
+        , m_robot(robot)
     {
 
     }
