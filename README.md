@@ -3,7 +3,7 @@ CWaggle Robot Simulator
 
 See main.cpp for brief tutorial
 
-Run `make` from the cwaggle root directory to build 3 executables in the bin directory:
+Run `make` from the cwaggle root directory to build 3 executables in the `cwaggle/bin` directory:
 
 - `cwaggle_exaple`: drag circles / lines around to demonstrate physics
 - `cwaggle_orbital`: demo of Andrew Vardy's orbital construction algorithm
