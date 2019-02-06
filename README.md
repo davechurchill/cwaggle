@@ -11,4 +11,6 @@ Run `make` from the cwaggle root directory to build 3 demo executables in the `c
 
 Run either program to see a demo of the cwaggle system
 
+If you want to run the make command from the `cwaggle/bin` directory, you can type `make -C ..` to specify that the Makefile is one directory up from the current location
+
 Inspired by the JS Robot simulator 'Waggle' by Andrew Vardy
