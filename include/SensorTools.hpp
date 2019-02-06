@@ -4,7 +4,7 @@
 
 #include "Entity.hpp"
 #include "World.hpp"
-#include "Sensors.h"
+#include "Sensors.hpp"
 
 struct SensorReading
 {

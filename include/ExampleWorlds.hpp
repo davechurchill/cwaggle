@@ -4,7 +4,7 @@
 #include "EntityControllers.hpp"
 #include "World.hpp"
 #include "ExampleGrids.hpp"
-#include "Sensors.h"
+#include "Sensors.hpp"
 
 namespace ExampleWorlds
 {

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "World.hpp"
-#include "Sensors.h"
+#include "Sensors.hpp"
 #include "Entity.hpp"
 
 namespace Eval

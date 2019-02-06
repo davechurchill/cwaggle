@@ -1,63 +1,61 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="..\src\main.cpp" />
+    <ClInclude Include="..\include\Components.hpp">
+      <Filter>cwaggle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Entity.hpp">
+      <Filter>cwaggle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\EntityAction.hpp">
+      <Filter>cwaggle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\EntityControllers.hpp">
+      <Filter>cwaggle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\EntityManager.hpp">
+      <Filter>cwaggle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\EntityMemoryPool.hpp">
+      <Filter>cwaggle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\ExampleGrids.hpp">
+      <Filter>cwaggle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\ExampleWorlds.hpp">
+      <Filter>cwaggle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\GUI.hpp">
+      <Filter>cwaggle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Sensors.hpp">
+      <Filter>cwaggle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\SensorTools.hpp">
+      <Filter>cwaggle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Simulator.hpp">
+      <Filter>cwaggle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Timer.hpp">
+      <Filter>cwaggle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\ValueGrid.hpp">
+      <Filter>cwaggle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Vec2.hpp">
+      <Filter>cwaggle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\World.hpp">
+      <Filter>cwaggle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\CWaggle.h">
+      <Filter>cwaggle</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\ExampleGrids.hpp" />
-    <ClInclude Include="..\src\ExampleWorlds.hpp" />
-    <ClInclude Include="..\src\GUI.hpp" />
-    <ClInclude Include="..\src\Simulator.hpp" />
-    <ClInclude Include="..\src\Timer.hpp" />
-    <ClInclude Include="..\src\ValueGrid.hpp" />
-    <ClInclude Include="..\src\Vec2.hpp" />
-    <ClInclude Include="..\src\World.hpp" />
-    <ClInclude Include="..\src\Components.hpp">
-      <Filter>ecs</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\EntityManager.hpp">
-      <Filter>ecs</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\EntityControllers.hpp">
-      <Filter>control</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\EntityAction.hpp">
-      <Filter>control</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\Sensors.h">
-      <Filter>sensors</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\EntityMemoryPool.hpp">
-      <Filter>ecs</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\Entity.hpp">
-      <Filter>ecs</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\SensorTools.hpp">
-      <Filter>sensors</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\QLearning.hpp">
-      <Filter>rl</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\RLExperiment.hpp">
-      <Filter>rl</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\Eval.hpp">
-      <Filter>rl</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <Filter Include="ecs">
-      <UniqueIdentifier>{be3303c3-4066-4150-a77d-96d61ef6be12}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="sensors">
-      <UniqueIdentifier>{5f2dbf19-9f22-4de4-b843-4976e29db089}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="control">
-      <UniqueIdentifier>{5d7e979a-4d56-42a7-9856-f50c6af5cf3a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="rl">
-      <UniqueIdentifier>{8a136bbb-1727-4089-bea4-56838e87003c}</UniqueIdentifier>
+    <Filter Include="cwaggle">
+      <UniqueIdentifier>{818f3d26-bf08-4fcd-beed-76e0fff86024}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
