@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\rl\Eval.hpp" />
+    <ClInclude Include="..\src\rl\OrbitalController.hpp" />
     <ClInclude Include="..\src\rl\QLearning.hpp" />
     <ClInclude Include="..\src\rl\RLExperiment.hpp" />
   </ItemGroup>

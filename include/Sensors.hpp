@@ -20,19 +20,19 @@ public:
     Sensor(size_t ownerID, double angle, double distance)
         : m_ownerID(ownerID), m_angle(angle*3.1415926 / 180.0), m_distance(distance) { }
 
-    virtual Vec2 getPosition()
+    inline virtual Vec2 getPosition()
     {
         const Vec2 & pos = Entity(m_ownerID).getComponent<CTransform>().p;
         double sumAngle = m_angle + Entity(m_ownerID).getComponent<CSteer>().angle;
         return pos + Vec2(m_distance * cos(sumAngle), m_distance * sin(sumAngle));
     }
 
-    virtual double angle() const
+    inline virtual double angle() const
     {
         return m_angle;
     }
 
-    virtual double distance() const
+    inline virtual double distance() const
     {
         return m_distance;
     }
@@ -49,7 +49,7 @@ public:
     GridSensor(size_t ownerID, double angle, double distance)
         : Sensor(ownerID, angle, distance) {}
 
-    virtual double getReading(std::shared_ptr<World> world)
+    inline virtual double getReading(std::shared_ptr<World> world)
     {
         if (world->getGrid().width() == 0) { return 0; }
         Vec2 sPos = getPosition();
@@ -72,7 +72,7 @@ public:
         m_radius = radius;
     }
 
-    double getReading(std::shared_ptr<World> world)
+    inline double getReading(std::shared_ptr<World> world)
     {
         double sum = 0;
         Vec2 pos = getPosition();
@@ -90,7 +90,7 @@ public:
         return sum;
     }
 
-    double radius() const
+    inline double radius() const
     {
         return m_radius;
     }
@@ -109,7 +109,7 @@ public:
         m_radius = radius;
     }
 
-    double getReading(std::shared_ptr<World> world)
+    inline double getReading(std::shared_ptr<World> world)
     {
         double sum = 0;
         Vec2 pos = getPosition();
@@ -130,7 +130,7 @@ public:
         return sum;
     }
 
-    double radius() const
+    inline double radius() const
     {
         return m_radius;
     }

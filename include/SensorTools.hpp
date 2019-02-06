@@ -32,7 +32,7 @@ struct SensorReading
 
 namespace SensorTools
 {
-    void ReadSensorArray(Entity e, std::shared_ptr<World> world, SensorReading & reading)
+    inline void ReadSensorArray(Entity e, std::shared_ptr<World> world, SensorReading & reading)
     {
         reading = {};
 
