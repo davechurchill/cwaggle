@@ -102,15 +102,15 @@ namespace ExampleWorlds
             robot.addComponent<CRobotType>(0);
 
             auto & sensors = robot.addComponent<CSensorArray>();
-            sensors.gridSensors.push_back(GridSensor(robot, 45, robotSize * 2));
-            sensors.gridSensors.push_back(GridSensor(robot, 0, robotSize * 2));
-            sensors.gridSensors.push_back(GridSensor(robot, -45, robotSize * 2));
-            sensors.puckSensors.push_back(PuckSensor(robot, -30, robotSize * 4, robotSize * 2));
-            sensors.puckSensors.push_back(PuckSensor(robot, 30, robotSize * 4, robotSize * 2));
-            sensors.puckSensors.push_back(PuckSensor(robot, 60, robotSize * 7, robotSize * 2));
-            sensors.puckSensors.push_back(PuckSensor(robot, -60, robotSize * 7, robotSize * 2));
-            sensors.obstacleSensors.push_back(ObstacleSensor(robot, 45, robotSize, robotSize/4));
-            sensors.obstacleSensors.push_back(ObstacleSensor(robot, -45, robotSize, robotSize/4));
+            sensors.gridSensors.push_back(std::make_shared<GridSensor>(robot, 45, robotSize * 2));
+            sensors.gridSensors.push_back(std::make_shared<GridSensor>(robot, 0, robotSize * 2));
+            sensors.gridSensors.push_back(std::make_shared<GridSensor>(robot, -45, robotSize * 2));
+            sensors.puckSensors.push_back(std::make_shared<PuckSensor>(robot, -30, robotSize * 4, robotSize * 2));
+            sensors.puckSensors.push_back(std::make_shared<PuckSensor>(robot, 30, robotSize * 4, robotSize * 2));
+            sensors.puckSensors.push_back(std::make_shared<PuckSensor>(robot, 60, robotSize * 7, robotSize * 2));
+            sensors.puckSensors.push_back(std::make_shared<PuckSensor>(robot, -60, robotSize * 7, robotSize * 2));
+            sensors.obstacleSensors.push_back(std::make_shared<ObstacleSensor>(robot, 45, robotSize, robotSize/4));
+            sensors.obstacleSensors.push_back(std::make_shared<ObstacleSensor>(robot, -45, robotSize, robotSize/4));
         }
 
         // add the innie robots
@@ -125,15 +125,15 @@ namespace ExampleWorlds
             robot.addComponent<CRobotType>(1);
 
             auto & sensors = robot.addComponent<CSensorArray>();
-            sensors.gridSensors.push_back(GridSensor(robot, 45, robotSize * 2));
-            sensors.gridSensors.push_back(GridSensor(robot, 0, robotSize * 2));
-            sensors.gridSensors.push_back(GridSensor(robot, -45, robotSize * 2));
-            sensors.puckSensors.push_back(PuckSensor(robot, -45, robotSize * 3, robotSize * 2));
-            sensors.puckSensors.push_back(PuckSensor(robot, 45, robotSize * 3, robotSize * 2));
-            sensors.puckSensors.push_back(PuckSensor(robot, 70, robotSize * 6.5, robotSize * 2));
-            sensors.puckSensors.push_back(PuckSensor(robot, -70, robotSize * 6.5, robotSize * 2));
-            sensors.obstacleSensors.push_back(ObstacleSensor(robot, 45, robotSize, robotSize/4));
-            sensors.obstacleSensors.push_back(ObstacleSensor(robot, -45, robotSize, robotSize/4));
+            sensors.gridSensors.push_back(std::make_shared<GridSensor>(robot, 45, robotSize * 2));
+            sensors.gridSensors.push_back(std::make_shared<GridSensor>(robot, 0, robotSize * 2));
+            sensors.gridSensors.push_back(std::make_shared<GridSensor>(robot, -45, robotSize * 2));
+            sensors.puckSensors.push_back(std::make_shared<PuckSensor>(robot, -45, robotSize * 3, robotSize * 2));
+            sensors.puckSensors.push_back(std::make_shared<PuckSensor>(robot, 45, robotSize * 3, robotSize * 2));
+            sensors.puckSensors.push_back(std::make_shared<PuckSensor>(robot, 70, robotSize * 6.5, robotSize * 2));
+            sensors.puckSensors.push_back(std::make_shared<PuckSensor>(robot, -70, robotSize * 6.5, robotSize * 2));
+            sensors.obstacleSensors.push_back(std::make_shared<ObstacleSensor>(robot, 45, robotSize, robotSize/4));
+            sensors.obstacleSensors.push_back(std::make_shared<ObstacleSensor>(robot, -45, robotSize, robotSize/4));
         }
 
         // add the pucks

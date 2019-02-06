@@ -1,8 +1,10 @@
 #pragma once
 
+#include <sstream>
+
 #include "Entity.hpp"
 #include "World.hpp"
-#include <sstream>
+#include "Sensors.h"
 
 struct SensorReading
 {
@@ -37,19 +39,19 @@ namespace SensorTools
         auto & sensors = e.getComponent<CSensorArray>();
         for (auto & sensor : sensors.gridSensors)
         {
-            if (sensor.angle() < 0) { reading.leftNest = sensor.getReading(world); }
-            if (sensor.angle() > 0) { reading.rightNest = sensor.getReading(world); }
-            if (sensor.angle() == 0) { reading.midNest = sensor.getReading(world); }
+            if (sensor->angle() < 0) { reading.leftNest = sensor->getReading(world); }
+            if (sensor->angle() > 0) { reading.rightNest = sensor->getReading(world); }
+            if (sensor->angle() == 0) { reading.midNest = sensor->getReading(world); }
         }
         for (auto & sensor : sensors.obstacleSensors)
         {
-            if (sensor.angle() <= 0) { reading.leftObstacle += sensor.getReading(world); }
-            if (sensor.angle() > 0) { reading.rightObstacle += sensor.getReading(world); }
+            if (sensor->angle() <= 0) { reading.leftObstacle += sensor->getReading(world); }
+            if (sensor->angle() > 0) { reading.rightObstacle += sensor->getReading(world); }
         }
         for (auto & sensor : sensors.puckSensors)
         {
-            if (sensor.angle() <= 0) { reading.leftPucks += sensor.getReading(world); }
-            if (sensor.angle() > 0) { reading.rightPucks += sensor.getReading(world); }
+            if (sensor->angle() <= 0) { reading.leftPucks += sensor->getReading(world); }
+            if (sensor->angle() > 0) { reading.rightPucks += sensor->getReading(world); }
         }
     }
 

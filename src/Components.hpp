@@ -5,7 +5,6 @@
 #include <array>
 
 #include "Vec2.hpp"
-#include "Sensors.h"
 
 class CTransform
 {
@@ -44,12 +43,15 @@ public:
     }
 };
 
+class GridSensor;
+class PuckSensor;
+class ObstacleSensor;
 class CSensorArray
 {
 public:
-    std::vector<GridSensor>     gridSensors;
-    std::vector<PuckSensor>     puckSensors;
-    std::vector<ObstacleSensor> obstacleSensors;
+    std::vector<std::shared_ptr<GridSensor>>     gridSensors;
+    std::vector<std::shared_ptr<PuckSensor>>     puckSensors;
+    std::vector<std::shared_ptr<ObstacleSensor>> obstacleSensors;
     CSensorArray() {}
 };
 
@@ -103,59 +105,4 @@ public:
     CController() {}
     CController(decltype(controller) c)
         : controller(c) {}
-};
-
-class CShape
-{
-public:
-    sf::CircleShape shape;
-
-    CShape() {}
-    CShape(double radius, const sf::Color & color)
-        : shape((float)radius, 32)
-    {
-        shape.setFillColor(color);
-        shape.setOrigin((float)radius, (float)radius);
-    }
-};
-
-
-class CLifeSpan
-{
-public:
-    size_t created = 0;
-    size_t lifespan = 0;
-    CLifeSpan() {}
-    CLifeSpan(int currentFrame, int l) : created(currentFrame), lifespan(l) {}
-};
-
-class CInput
-{
-public:
-    bool up         = false;
-    bool down       = false;
-    bool left       = false;
-    bool right      = false;
-    bool shoot      = false;
-    bool canShoot   = true;
-
-    CInput() {}
-};
-
-class CBoundingBox
-{
-public:
-    Vec2 size;
-    Vec2 halfSize;
-    CBoundingBox() {}
-    CBoundingBox(const Vec2 & s)
-        : size(s), halfSize(s.x / 2, s.y / 2) {}
-};
-
-class CGravity
-{
-public:
-    float gravity;
-    CGravity() : gravity(0) {}
-    CGravity(float g) : gravity(g) {}
 };
