@@ -93,8 +93,7 @@ public:
     void updateValue(size_t s, size_t a, double r, size_t ns) 
     {
         ++m_updates;
-        size_t maxVisited = *std::max_element(m_N[s].begin(), m_N[s].end());
-        if (maxVisited == 0) { m_visited++; }
+        if (m_N[s][a] == 0) { m_visited++; }
         ++m_N[s][a];
         double maxNSQ = *std::max_element(m_Q[ns].begin(), m_Q[ns].end());
         m_Q[s][a] += m_alpha * (r + m_gamma*maxNSQ - m_Q[s][a]);
@@ -121,9 +120,14 @@ public:
         }
     }
 
+    size_t size() const
+    {
+        return m_numStates * m_numActions;
+    }
+
     double getCoverage() const
     {
-        return (double)m_visited / (m_numStates);
+        return (double)m_visited / (m_numStates * m_numActions);
     }
 
     size_t numUpdates() const

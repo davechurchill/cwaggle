@@ -3,12 +3,14 @@
 #include <memory>
 #include <fstream>
 #include <string>
+#include <functional>
 
 #include "CWaggle.h"
 #include "GUI.hpp"
 #include "QLearning.hpp"
 #include "Eval.hpp"
 #include "OrbitalController.hpp"
+#include "Hash.hpp"
 
 struct RLExperimentConfig
 {
@@ -33,6 +35,8 @@ struct RLExperimentConfig
     double gamma        = 0.9;
     double epsilon      = 0.1;
 
+    HashFunction hashFunction;
+
     size_t writePlotSkip    = 0;
     std::string plotFile   = "";
     size_t saveQSkip = 0;
@@ -41,7 +45,7 @@ struct RLExperimentConfig
     std::string loadQFile[2];
     double resetEval    = 0;
 
-    std::vector<double> angles = { };
+    std::vector<double> actions = { };
 
     // Orbital Construction Config
     OrbitalConstructionConfig occ;
@@ -52,6 +56,8 @@ struct RLExperimentConfig
     {
         std::ifstream fin(filename);
         std::string token;
+        double tempVal = 0;
+        actions = {};
 
         while (fin.good())
         {
@@ -68,8 +74,6 @@ struct RLExperimentConfig
             else if (token == "angularSpeed")   { fin >> occ.maxAngularSpeed; }
             else if (token == "outieThreshold") { fin >> occ.thresholds[0]; }
             else if (token == "innieThreshold") { fin >> occ.thresholds[1]; }
-            else if (token == "numStates")      { fin >> numStates; }
-            else if (token == "numActions")     { fin >> numActions; }
             else if (token == "batchSize")      { fin >> batchSize; }
             else if (token == "initialQ")       { fin >> initialQ; }
             else if (token == "alpha")          { fin >> alpha; }
@@ -82,26 +86,24 @@ struct RLExperimentConfig
             else if (token == "saveQFilename")  { fin >> saveQFile[0] >> saveQFile[1]; }
             else if (token == "loadQFromFile")  { fin >> loadQ; }
             else if (token == "loadQFilename")  { fin >> loadQFile[0] >> loadQFile[1]; }
+            else if (token == "hashFunction")   
+            { 
+                fin >> token;
+                hashFunction = Hash::GetHashData(token).Function; 
+                numStates    = Hash::GetHashData(token).MaxHashSize;
+            }
+            else if (token == "actions") 
+            { 
+                fin >> numActions; 
+                for (size_t a = 0; a < numActions; ++a)
+                {
+                    fin >> tempVal;
+                    actions.push_back(tempVal);
+                }
+            }
         }
     }
 };
-
-size_t ComputeHash(SensorReading & reading)
-{
-    size_t sum = 0;
-
-    sum += (reading.leftPucks == 0)             ? 0 : (1 << 0);
-    sum += (reading.rightPucks == 0)            ? 0 : (1 << 1);
-    sum += (reading.leftObstacle == 0)          ? 0 : (1 << 2);
-    sum += (reading.rightObstacle == 0)         ? 0 : (1 << 3);
-    sum += (size_t)(reading.midNest * 15)           * (1 << 4);
-    sum += (reading.leftNest < reading.midNest) ? 0 : (1 << 8);
-    sum += (reading.rightNest < reading.midNest) ? 0 : (1 << 9);
-
-    if (sum >= (1 << 10)) { std::cout << "HASH ERROR: " << sum << "\n"; }
-    return sum;
-}
-
 
 class RLExperiment
 {
@@ -152,9 +154,9 @@ class RLExperiment
     {
         double closest = std::numeric_limits<double>().max();
         size_t closestAction = 0;
-        for (size_t i = 0; i < m_config.angles.size(); i++)
+        for (size_t i = 0; i < m_config.actions.size(); i++)
         {
-            double diff = abs(m_config.angles[i] - action.angularSpeed());
+            double diff = abs(m_config.actions[i] - action.angularSpeed());
             if (diff < closest)
             {
                 closest = diff;
@@ -166,7 +168,7 @@ class RLExperiment
 
     EntityAction getAction(size_t actionIndex)
     {
-        return EntityAction(m_config.occ.forwardSpeed, m_config.angles[actionIndex]);
+        return EntityAction(m_config.occ.forwardSpeed, m_config.actions[actionIndex]);
     }
 
 public:
@@ -190,7 +192,6 @@ public:
 
         resetSimulator();
         m_stepsUntilRLUpdate = m_config.batchSize;
-        
     }
     
     void doSimulationStep()
@@ -216,7 +217,7 @@ public:
         {
             // record the robot sensor state into the batch
             SensorTools::ReadSensorArray(robot, m_sim->getWorld(), reading);
-            m_states.push_back(ComputeHash(reading));
+            m_states.push_back(m_config.hashFunction(reading));
             size_t robotType = robot.getComponent<CRobotType>().type;
 
             // get the action that should be done for this entity
@@ -229,7 +230,7 @@ public:
             }
             else
             {
-                action = getAction(m_QL[robotType].selectActionFromPolicy(ComputeHash(reading)));
+                action = getAction(m_QL[robotType].selectActionFromPolicy(m_config.hashFunction(reading)));
                 // action = EntityControllers::OrbitalConstruction(robot, m_sim->getWorld(), reading, m_config.occ);
             }
 
@@ -250,7 +251,7 @@ public:
         {
             // record the robot sensor state into the batch
             SensorTools::ReadSensorArray(robot, m_sim->getWorld(), reading);
-            m_nextStates.push_back(ComputeHash(reading));
+            m_nextStates.push_back(m_config.hashFunction(reading));
         }
 
         if (m_states.size() != m_actions.size() || m_states.size() != m_nextStates.size())
@@ -308,7 +309,7 @@ public:
                 m_status = std::stringstream();
                 m_status << "Sim Steps:  " << m_simulationSteps << "\n";
                 m_status << "Sim / Sec:  " << m_simulationSteps * 1000 / m_simulationTime << "\n";
-                m_status << "QO Coverage: " << m_QL[0].getCoverage() << "\n";
+                m_status << "QO Coverage: " << m_QL[0].getCoverage() << " of " << m_QL[0].size() << "\n";
                 m_status << "Q1 Coverage: " << m_QL[1].getCoverage() << "\n";
                 m_status << "Puck Eval:  " << eval << "\n";
                 m_gui->setStatus(m_status.str());
@@ -332,14 +333,6 @@ namespace RLExperiments
     {
         RLExperimentConfig config;
         config.load("rl_config.txt");
-        
-        config.angles =
-        {
-             config.occ.maxAngularSpeed,
-             config.occ.maxAngularSpeed / 3,
-            -config.occ.maxAngularSpeed / 3,
-            -config.occ.maxAngularSpeed
-        };
 
         RLExperiment exp(config);
         exp.run();
