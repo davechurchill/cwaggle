@@ -1,0 +1,5 @@
+set terminal pdf
+set output "forms.pdf"
+set xlabel "Simulation Steps"
+set ylabel "Number of Formations"
+plot "form.txt" with steps

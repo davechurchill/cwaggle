@@ -11,26 +11,17 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\Components.hpp" />
-    <ClInclude Include="..\include\CWaggle.h" />
-    <ClInclude Include="..\include\Entity.hpp" />
-    <ClInclude Include="..\include\EntityAction.hpp" />
-    <ClInclude Include="..\include\EntityControllers.hpp" />
-    <ClInclude Include="..\include\EntityManager.hpp" />
-    <ClInclude Include="..\include\EntityMemoryPool.hpp" />
-    <ClInclude Include="..\include\ExampleGrids.hpp" />
-    <ClInclude Include="..\include\ExampleWorlds.hpp" />
-    <ClInclude Include="..\include\GUI.hpp" />
-    <ClInclude Include="..\include\Sensors.hpp" />
-    <ClInclude Include="..\include\SensorTools.hpp" />
-    <ClInclude Include="..\include\Simulator.hpp" />
-    <ClInclude Include="..\include\Timer.hpp" />
-    <ClInclude Include="..\include\ValueGrid.hpp" />
-    <ClInclude Include="..\include\Vec2.hpp" />
-    <ClInclude Include="..\include\World.hpp" />
+    <ClInclude Include="..\src\rl\Eval.hpp" />
+    <ClInclude Include="..\src\rl\Hash.hpp" />
+    <ClInclude Include="..\src\rl\OrbitalController.hpp" />
+    <ClInclude Include="..\src\rl\QLearning.hpp" />
+    <ClInclude Include="..\src\rl\RLExperiment.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\rl\main.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{08A10BC2-2DCF-4F95-A0B2-BA931971AEEA}</ProjectGuid>
+    <ProjectGuid>{7D80A262-0531-4EAC-B329-1EB4466DE991}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>NeuralNetwork</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
