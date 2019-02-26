@@ -12,6 +12,7 @@ outieThreshold 0.6
 innieThreshold 0.8
 hashFunction   Original
 actions        4 0.3 0.15 -0.15 -0.3
+maxTimeSteps   1000000
 batchSize      1
 initialQ       1.0
 alpha          0.1
