@@ -2,6 +2,7 @@ width          800
 height         800
 numRobots      1
 robotRadius    10
+gui	       1
 numPucks       250
 puckRadius     10
 simTimeStep    1

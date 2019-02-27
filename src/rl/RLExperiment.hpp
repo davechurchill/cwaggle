@@ -17,6 +17,7 @@ struct RLExperimentConfig
     // Square World Parameters
     size_t width        = 800;
     size_t height       = 800;
+    size_t gui          = 1;
     size_t numRobots    = 20;
     double robotRadius  = 10.0;
     size_t numPucks     = 250;
@@ -66,6 +67,7 @@ struct RLExperimentConfig
             if (token == "width")               { fin >> width; }
             else if (token == "height")         { fin >> height; }
             else if (token == "numRobots")      { fin >> numRobots; }
+            else if (token == "gui")            { fin >> gui; }
             else if (token == "robotRadius")    { fin >> robotRadius; }
             else if (token == "numPucks")       { fin >> numPucks; }
             else if (token == "puckRadius")     { fin >> puckRadius; }
@@ -151,7 +153,7 @@ class RLExperiment
         {
             m_gui->setSim(m_sim);
         }
-        else
+        else if (m_config.gui)
         {
             m_gui = std::make_shared<GUI>(m_sim, 240);
         }
@@ -216,6 +218,11 @@ public:
         }
 
         ++m_simulationSteps;
+
+        if (!m_gui && (m_simulationSteps % 100000 == 0))
+        {
+            std::cout << "Simulation Step: " << m_simulationSteps << "\n";
+        }
 
         SensorReading reading;
 
@@ -380,3 +387,4 @@ namespace RLExperiments
         exp.printResults();
     }
 }
+
