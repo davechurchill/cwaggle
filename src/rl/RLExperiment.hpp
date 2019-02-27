@@ -27,6 +27,7 @@ struct RLExperimentConfig
     double renderSteps  = 1;
 
     // Q-Learning Parameters
+    size_t maxTimeSteps = 0;
     size_t numStates    = 0;
     size_t numActions   = 0;
     size_t batchSize    = 1;
@@ -75,6 +76,7 @@ struct RLExperimentConfig
             else if (token == "outieThreshold") { fin >> occ.thresholds[0]; }
             else if (token == "innieThreshold") { fin >> occ.thresholds[1]; }
             else if (token == "batchSize")      { fin >> batchSize; }
+            else if (token == "maxTimeSteps")   { fin >> maxTimeSteps; }
             else if (token == "initialQ")       { fin >> initialQ; }
             else if (token == "alpha")          { fin >> alpha; }
             else if (token == "gamma")          { fin >> gamma; }
@@ -123,9 +125,14 @@ class RLExperiment
     double                      m_simulationTime = 0;
     Timer                       m_simTimer;
     double                      m_previousEval = 0;
+    size_t                      m_formations = 0;
     std::ofstream               m_fout;
 
     std::stringstream           m_status;
+
+
+    // data keeping
+    std::vector<size_t>         m_formationCompleteTimes;
 
     void resetSimulator()
     {
@@ -290,15 +297,46 @@ public:
         }
     }
 
+    void printResults()
+    {
+        // prints out the number of formations completed
+        std::stringstream ss;
+        ss << "gnuplot/results_form_" << m_config.numRobots << "_" << m_config.maxTimeSteps << ".txt";
+        std::cout << "Printing Results to: " << ss.str() << "\n";
+
+        std::ofstream fout(ss.str());
+        fout << m_formations;
+
+        // prints out the number of  completed
+        std::stringstream ss2;
+        ss2 << "gnuplot/results_form_over_time_" << m_config.numRobots << "_" << m_config.maxTimeSteps << ".txt";
+        std::cout << "Printing Results to: " << ss2.str() << "\n";
+
+
+        std::ofstream fout2(ss2.str());
+        fout2 << "0 0\n";
+        for (size_t i = 0; i < m_formationCompleteTimes.size(); i++)
+        {
+            fout2 << m_formationCompleteTimes[i] << " " << (i+1) << "\n";  
+        }
+
+    }
+
     void run()
     {
-        while (true)
+        bool running = true;
+        while (running)
         {
             double eval = Eval::PuckAvgThresholdDiff(m_sim->getWorld(), m_config.occ.thresholds[0], m_config.occ.thresholds[1]);
             
             m_simTimer.start();
             for (size_t i = 0; i < m_config.renderSteps; i++)
             {
+                if (m_config.maxTimeSteps > 0 && m_simulationSteps >= m_config.maxTimeSteps)
+                {
+                    running = false;
+                }
+
                 doSimulationStep();
             }
             m_simulationTime += m_simTimer.getElapsedTimeInMilliSec();
@@ -312,6 +350,7 @@ public:
                 m_status << "QO Coverage: " << m_QL[0].getCoverage() << " of " << m_QL[0].size() << "\n";
                 m_status << "Q1 Coverage: " << m_QL[1].getCoverage() << "\n";
                 m_status << "Puck Eval:  " << eval << "\n";
+                m_status << "Formations: " << m_formations << "\n";
                 m_gui->setStatus(m_status.str());
 
                 // draw gui
@@ -320,6 +359,8 @@ public:
 
             if (m_config.resetEval && (eval > m_config.resetEval))
             {
+                m_formations += 1;
+                m_formationCompleteTimes.push_back(m_simulationSteps);
                 resetSimulator();
             }
         }
@@ -336,5 +377,6 @@ namespace RLExperiments
 
         RLExperiment exp(config);
         exp.run();
+        exp.printResults();
     }
 }
