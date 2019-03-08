@@ -21,19 +21,17 @@ namespace Hash
         const static std::string & name = "Original";
         const static size_t maxHashSize = GetHashData(name).MaxHashSize;
 
-        const size_t MaxHashSize = (1 << 10);
+        const size_t MaxHashSize = (1 << 8);
         size_t hash = 0;
 
         hash += (reading.leftPucks == 0) ? 0 : (1 << 0);
         hash += (reading.rightPucks == 0) ? 0 : (1 << 1);
-        hash += (reading.leftObstacle == 0) ? 0 : (1 << 2);
-        hash += (reading.rightObstacle == 0) ? 0 : (1 << 3);
-        hash += (reading.leftNest < reading.midNest) ? 0 : (1 << 4);
-        hash += (reading.rightNest < reading.midNest) ? 0 : (1 << 5);
+        hash += (reading.leftNest < reading.midNest) ? 0 : (1 << 2);
+        hash += (reading.rightNest < reading.midNest) ? 0 : (1 << 3);
 
         size_t midNestReading = (size_t)(floor(reading.midNest * 16));
         if (midNestReading == 16) midNestReading = 15;
-        hash += midNestReading * (1 << 6);
+        hash += midNestReading * (1 << 4);
 
         if (hash >= maxHashSize) { std::cerr << "WARNING: " << name << " hash size too large: " << hash; }
         return hash;
@@ -81,9 +79,9 @@ namespace Hash
         // it will only be called once per experiment
         if (hashData.empty())
         {
-            hashData["Original"]    = { OriginalHash,   (1 << 10) };
-            hashData["PuckMid4"]    = { PuckMid4,       (1 <<  4) };
-            hashData["PuckMid16"]   = { PuckMid16,      (1 <<  6) };
+            hashData["Original"]    = { OriginalHash,   (1 << 8) };
+            hashData["PuckMid4"]    = { PuckMid4,       (1 << 4) };
+            hashData["PuckMid16"]   = { PuckMid16,      (1 << 6) };
         }
 
         if (hashData.find(hashFunctionName) == hashData.end())

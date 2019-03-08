@@ -2,7 +2,7 @@ width          800
 height         800
 numRobots      1
 robotRadius    10
-gui	       1
+gui            1
 numPucks       250
 puckRadius     10
 simTimeStep    1
@@ -13,16 +13,15 @@ outieThreshold 0.6
 innieThreshold 0.8
 hashFunction   Original
 actions        4 0.3 0.15 -0.15 -0.3
-maxTimeSteps   1000000
+maxTimeSteps   2000000
 batchSize      1
 initialQ       1.0
-alpha          0.1
+alpha          0.2
 gamma          0.9
-epsilon        0.1
-resetEval      0.96
+epsilon        0.0
+resetEval      0.94
 writePlotSkip  0
 plotFilename   gnuplot/1.txt
-saveQSkip      100000
-saveQFilename  gnuplot/q_out.txt gnuplot/q_in.txt
-loadQFromFile  0
-loadQFilename  gnuplot/q_out.txt gnuplot/q_in.txt
+qLearning      1
+savePolicy     100000 gnuplot/q_out.txt
+loadPolicy     0 gnuplot/q_out.txt

@@ -32,6 +32,7 @@ struct RLExperimentConfig
     size_t numStates    = 0;
     size_t numActions   = 0;
     size_t batchSize    = 1;
+    size_t qLearning    = 1;
     double initialQ     = 0.0;
     double alpha        = 0.1;
     double gamma        = 0.9;
@@ -42,9 +43,9 @@ struct RLExperimentConfig
     size_t writePlotSkip    = 0;
     std::string plotFile   = "";
     size_t saveQSkip = 0;
-    std::string saveQFile[2];
+    std::string saveQFile;
     size_t loadQ = 0;
-    std::string loadQFile[2];
+    std::string loadQFile;
     double resetEval    = 0;
 
     std::vector<double> actions = { };
@@ -86,10 +87,9 @@ struct RLExperimentConfig
             else if (token == "resetEval")      { fin >> resetEval; }
             else if (token == "writePlotSkip")  { fin >> writePlotSkip; }
             else if (token == "plotFilename")   { fin >> plotFile; }
-            else if (token == "saveQSkip")      { fin >> saveQSkip; }
-            else if (token == "saveQFilename")  { fin >> saveQFile[0] >> saveQFile[1]; }
-            else if (token == "loadQFromFile")  { fin >> loadQ; }
-            else if (token == "loadQFilename")  { fin >> loadQFile[0] >> loadQFile[1]; }
+            else if (token == "qLearning")      { fin >> qLearning; }
+            else if (token == "savePolicy")     { fin >> saveQSkip >> saveQFile; }
+            else if (token == "loadPolicy")     { fin >> loadQ >> loadQFile; }
             else if (token == "hashFunction")   
             { 
                 fin >> token;
@@ -112,7 +112,7 @@ struct RLExperimentConfig
 class RLExperiment
 {
     RLExperimentConfig          m_config;
-    QLearning                   m_QL[2];
+    QLearning                   m_QL;
 
     std::shared_ptr<GUI>        m_gui;
     std::shared_ptr<Simulator>  m_sim;
@@ -185,13 +185,11 @@ public:
     RLExperiment(const RLExperimentConfig & config)
         : m_config(config)
     {
-        m_QL[0] = QLearning(m_config.numStates, m_config.numActions, m_config.alpha, m_config.gamma, m_config.initialQ);
-        m_QL[1] = QLearning(m_config.numStates, m_config.numActions, m_config.alpha, m_config.gamma, m_config.initialQ);
+        m_QL = QLearning(m_config.numStates, m_config.numActions, m_config.alpha, m_config.gamma, m_config.initialQ);
 
         if (m_config.loadQ)
         {
-            m_QL[0].load(m_config.loadQFile[0]);
-            m_QL[1].load(m_config.loadQFile[1]);
+            m_QL.load(m_config.loadQFile);
         }
 
         if (m_config.writePlotSkip)
@@ -213,8 +211,7 @@ public:
         
         if (m_config.saveQSkip && m_simulationSteps % m_config.saveQSkip == 0)
         {
-            m_QL[0].save(m_config.saveQFile[0]);
-            m_QL[1].save(m_config.saveQFile[1]);
+            m_QL.save(m_config.saveQFile);
         }
 
         ++m_simulationSteps;
@@ -232,7 +229,6 @@ public:
             // record the robot sensor state into the batch
             SensorTools::ReadSensorArray(robot, m_sim->getWorld(), reading);
             m_states.push_back(m_config.hashFunction(reading));
-            size_t robotType = robot.getComponent<CRobotType>().type;
 
             // get the action that should be done for this entity
             EntityAction action;
@@ -244,7 +240,7 @@ public:
             }
             else
             {
-                action = getAction(m_QL[robotType].selectActionFromPolicy(m_config.hashFunction(reading)));
+                action = getAction(m_QL.selectActionFromPolicy(m_config.hashFunction(reading)));
                 // action = EntityControllers::OrbitalConstruction(robot, m_sim->getWorld(), reading, m_config.occ);
             }
 
@@ -282,14 +278,12 @@ public:
 
             if (reward <= 0) reward -= 1;
 
-            // perform the Q-learning update
-            //if (reward != 0)
+            if (m_config.qLearning)
             {
                 for (size_t i = 0; i < m_states.size(); i++)
                 {
-                    size_t robotType = m_robotsActed[i].getComponent<CRobotType>().type;
-                    m_QL[robotType].updateValue(m_states[i], m_actions[i], reward, m_nextStates[i]);
-                    m_QL[robotType].updatePolicy(m_states[i]);
+                    m_QL.updateValue(m_states[i], m_actions[i], reward, m_nextStates[i]);
+                    m_QL.updatePolicy(m_states[i]);
                 }
             }
 
@@ -354,8 +348,7 @@ public:
                 m_status = std::stringstream();
                 m_status << "Sim Steps:  " << m_simulationSteps << "\n";
                 m_status << "Sim / Sec:  " << m_simulationSteps * 1000 / m_simulationTime << "\n";
-                m_status << "QO Coverage: " << m_QL[0].getCoverage() << " of " << m_QL[0].size() << "\n";
-                m_status << "Q1 Coverage: " << m_QL[1].getCoverage() << "\n";
+                m_status << "QO Coverage: " << m_QL.getCoverage() << " of " << m_QL.size() << "\n";
                 m_status << "Puck Eval:  " << eval << "\n";
                 m_status << "Formations: " << m_formations << "\n";
                 m_gui->setStatus(m_status.str());
