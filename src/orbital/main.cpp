@@ -6,7 +6,7 @@ class EntityController_OrbitalConstruction : public EntityController
     std::shared_ptr<World> m_world;
     Entity          m_robot;
     SensorReading   m_reading;
-    double          m_threshold[2] = { 0.65, 0.8 };
+    double          m_threshold[2] = { 0.5, 0.6 };
 
 public:
 
@@ -109,7 +109,7 @@ void OrbitalConstructionExample(int argc, char ** argv)
     double simulationTimeStep = 1.0;
 
     // how many simulation ticks are peformed before each world render in the GUI
-    double stepsPerRender = 1;
+    double stepsPerRender = 100;
 
     // read that value from console if it exists
     if (argc == 2)
