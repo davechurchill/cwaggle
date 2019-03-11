@@ -3,7 +3,7 @@
 #include "Simulator.hpp"
 #include "EntityControllers.hpp"
 #include "World.hpp"
-#include "ExampleGrids.hpp"
+#include "ValueGrid.hpp"
 #include "Sensors.hpp"
 
 namespace orbital_av_world
@@ -16,7 +16,8 @@ namespace orbital_av_world
         for (size_t r = 0; r < numRobots; r++)
         {
             Entity robot = world->addEntity("robot");
-            Vec2 rPos(rand() % width, rand() % height);
+//            Vec2 rPos(rand() % width, rand() % height);
+Vec2 rPos(rand() % width, 10);
             robot.addComponent<CTransform>(rPos);
             robot.addComponent<CCircleBody>(robotSize);
             robot.addComponent<CCircleShape>(robotSize);
@@ -28,8 +29,8 @@ namespace orbital_av_world
             sensors.gridSensors.push_back(std::make_shared<GridSensor>(robot, 0, robotSize * 2));
             sensors.gridSensors.push_back(std::make_shared<GridSensor>(robot, -45, robotSize * 2));
             sensors.puckSensors.push_back(std::make_shared<PuckSensor>(robot, -30, robotSize * 4, robotSize * 2));
-            //sensors.puckSensors.push_back(std::make_shared<PuckSensor>(robot, 30, robotSize * 4, robotSize * 2));
-            //sensors.puckSensors.push_back(std::make_shared<PuckSensor>(robot, 60, robotSize * 7, robotSize * 2));
+            sensors.puckSensors.push_back(std::make_shared<PuckSensor>(robot, 30, robotSize * 4, robotSize * 2));
+            sensors.puckSensors.push_back(std::make_shared<PuckSensor>(robot, 60, robotSize * 7, robotSize * 2));
             sensors.puckSensors.push_back(std::make_shared<PuckSensor>(robot, -60, robotSize * 7, robotSize * 2));
             sensors.obstacleSensors.push_back(std::make_shared<ObstacleSensor>(robot, 45, robotSize, robotSize/4));
             sensors.obstacleSensors.push_back(std::make_shared<ObstacleSensor>(robot, -45, robotSize, robotSize/4));
@@ -71,9 +72,13 @@ namespace orbital_av_world
             puck.addComponent<CCircleShape>(puckSize);
             puck.addComponent<CColor>(200, 44, 44, 255);
         }
+
+        // add a line representing an obstacle
+        Entity line = world->addEntity("line");
+        line.addComponent<CLineBody>(Vec2(400, 100), Vec2(400, 200), 0);
         
         //world->setGrid(ExampleGrids::GetInverseCenterDistanceGrid(64, 64));
-        world->setGrid(ExampleGrids::GetGridFromFile("images/horse.png"));
+        world->setGrid(ValueGrid("images/potential_field.png"));
 
         world->update();
         return world;

@@ -1,12 +1,14 @@
 #include "CWaggle.h"
 #include "custom_world.hpp"
 
+int controllerCounter = 3;
+
 class EntityController_OrbitalConstruction : public EntityController
 {
     std::shared_ptr<World> m_world;
     Entity          m_robot;
     SensorReading   m_reading;
-    double          m_threshold[2] = { 0.5, 0.6 };
+    double          m_threshold[2] = { .9, 0.6 };
 
 public:
 
@@ -14,6 +16,8 @@ public:
         : m_world(world)
         , m_robot(robot)
     {
+m_threshold[0] = controllerCounter / 10.0;
+controllerCounter++;
 
     }
 
@@ -31,8 +35,10 @@ public:
             return m_previousAction;
         }
 
-        size_t type = m_robot.getComponent<CRobotType>().type;
-        bool innie = type == 1;
+//        size_t type = m_robot.getComponent<CRobotType>().type;
+size_t type = 0;
+ //       bool innie = type == 1;
+bool innie = m_threshold[0] < 0.6;
 
         if (m_reading.rightNest >= m_reading.midNest && m_reading.midNest >= m_reading.leftNest)
         {
@@ -87,7 +93,12 @@ void OrbitalConstructionExample(int argc, char ** argv)
     // set up a new world that will be used for our simulation
     // let's pull one from the ExampleWorlds
     //auto world = ExampleWorlds::GetGridWorld720(2);
-    auto world = orbital_av_world::GetGetSquareWorld(800, 800, 20, 10, 250, 10);
+    auto world = orbital_av_world::GetGetSquareWorld(600, // width
+                                                     600, // height
+                                                     10,  // number of robots
+                                                     10,  // robot size
+                                                     100, // number of pucks
+                                                     10); // puck size
 
     // add orbital controllers to all the robots
     for (auto e : world->getEntities("robot"))
@@ -109,7 +120,7 @@ void OrbitalConstructionExample(int argc, char ** argv)
     double simulationTimeStep = 1.0;
 
     // how many simulation ticks are peformed before each world render in the GUI
-    double stepsPerRender = 100;
+    double stepsPerRender = 1;
 
     // read that value from console if it exists
     if (argc == 2)

@@ -26,25 +26,4 @@ namespace ExampleGrids
         return grid;
     }
 
-    ValueGrid GetGridFromFile(const std::string &filename)
-    {
-        sf::Image image;
-        image.loadFromFile(filename);
-        size_t width = image.getSize().x;
-        size_t height = image.getSize().y;
-
-        ValueGrid grid(width, height);
-
-        for (size_t x = 0; x < width; x++)
-        {
-            for (size_t y = 0; y < height; y++)
-            {
-                grid.set(x, y, image.getPixel(x, y).r );
-            }
-        }
-
-        grid.normalize();
-        return grid;
-    }
-
 };
