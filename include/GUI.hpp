@@ -17,6 +17,8 @@ class GUI
     sf::Text            m_text;
     sf::Clock           m_clock;
     sf::Vector2f        m_mousePos;
+    sf::Texture         m_gridTexture;
+    sf::Sprite          m_gridSprite;
     Entity              m_selected;
     Entity              m_shooting;
     Entity              m_selectedLine;
@@ -25,8 +27,6 @@ class GUI
     bool                m_grid = false;
     bool                m_sensors = false;
     std::string         m_status = "";
-    
-    std::vector<sf::RectangleShape> m_gridRectangles;
 
     void init(std::shared_ptr<Simulator> sim)
     {
@@ -39,30 +39,9 @@ class GUI
 
         // create the grid rectangle shapes
         auto & grid = m_sim->getWorld()->getGrid();
-        if (grid.width() > 0)
-        {
-            double rWidth = m_sim->getWorld()->width() / (double)grid.width();
-            double rHeight = m_sim->getWorld()->height() / (double)grid.height();
-            sf::Vector2f rectSize((float)rWidth, (float)rHeight);
-
-            // create the 2D grid of rectangles 
-            m_gridRectangles = std::vector<sf::RectangleShape>(grid.width() * grid.height());
-
-            // set the positions and colors of the rectangles
-            for (size_t x = 0; x < grid.width(); x++)
-            {
-                for (size_t y = 0; y < grid.height(); y++)
-                {
-                    sf::Vector2f rPos(x * (float)rWidth, y * (float)rHeight);
-                    uint8_t c = (uint8_t)(grid.get(x, y) * 255);
-                    sf::Color color(c, c, c);
-                    size_t index = y * grid.width() + x;
-                    m_gridRectangles[index].setSize(rectSize);
-                    m_gridRectangles[index].setFillColor(color);
-                    m_gridRectangles[index].setPosition(rPos);
-                }
-            }
-        }
+        m_gridTexture.loadFromImage(grid.getImage());
+        m_gridSprite = sf::Sprite(m_gridTexture);
+        m_gridSprite.scale((float)m_window.getSize().x / grid.width(), (float)m_window.getSize().y / grid.height());
     }
 
     void sUserInput()
@@ -208,10 +187,7 @@ class GUI
         // draw the value grid
         if (m_grid)
         {
-            for (auto & rect : m_gridRectangles)
-            {
-                m_window.draw(rect);
-            }
+            m_window.draw(m_gridSprite);
         }
 
         // draw circles

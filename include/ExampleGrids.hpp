@@ -20,6 +20,7 @@ namespace ExampleGrids
 
         grid.normalize();
         grid.invert();
+        grid.setImage();
         return grid;
     }
 };

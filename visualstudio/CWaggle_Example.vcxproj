@@ -48,7 +48,7 @@
     <OutDir>$(ProjectDir)..\bin\</OutDir>
     <TargetName>$(ProjectName)_d</TargetName>
     <LibraryPath>$(SFML_DIR)\lib;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(SFML_DIR)\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)..\include\;$(SFML_DIR)\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>

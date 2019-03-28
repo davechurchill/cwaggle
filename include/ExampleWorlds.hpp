@@ -128,6 +128,7 @@ namespace ExampleWorlds
         }
         
         world->setGrid(ExampleGrids::GetInverseCenterDistanceGrid(64, 64));
+        //world->setGrid(ValueGrid("triangle.png"));
 
         world->update();
         return world;
