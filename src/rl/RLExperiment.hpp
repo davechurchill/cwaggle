@@ -165,7 +165,7 @@ class RLExperiment
         size_t closestAction = 0;
         for (size_t i = 0; i < m_config.actions.size(); i++)
         {
-            double diff = abs(m_config.actions[i] - action.angularSpeed());
+            double diff = std::abs(m_config.actions[i] - action.angularSpeed());
             if (diff < closest)
             {
                 closest = diff;

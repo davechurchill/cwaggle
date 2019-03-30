@@ -41,8 +41,8 @@ namespace Eval
             double gridVal = grid.get(gridX, gridY);
 
             double diff = 0;
-            if (gridVal < t1) { diff = abs(gridVal - t1); } 
-            else if (gridVal > t2) { diff = abs(gridVal - t2); }
+            if (gridVal < t1) { diff = std::abs(gridVal - t1); } 
+            else if (gridVal > t2) { diff = std::abs(gridVal - t2); }
             sum += diff;
         }
 
