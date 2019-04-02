@@ -48,6 +48,9 @@ struct RLExperimentConfig
     std::string loadQFile;
     double resetEval    = 0;
 
+    std::string imagePath = "images/potential_field_L.png";
+    size_t image = 0;
+
     std::vector<double> actions = { };
 
     // Orbital Construction Config
@@ -90,6 +93,7 @@ struct RLExperimentConfig
             else if (token == "qLearning")      { fin >> qLearning; }
             else if (token == "savePolicy")     { fin >> saveQSkip >> saveQFile; }
             else if (token == "loadPolicy")     { fin >> loadQ >> loadQFile; }
+            else if (token == "importGrid")     { fin >> image >> imagePath; }
             else if (token == "hashFunction")   
             { 
                 fin >> token;
@@ -142,7 +146,8 @@ class RLExperiment
         (
             m_config.width, m_config.height,
             m_config.numRobots, m_config.robotRadius,
-            m_config.numPucks, m_config.puckRadius
+            m_config.numPucks, m_config.puckRadius,
+            m_config.image, m_config.imagePath
         );
 
         m_sim = std::make_shared<Simulator>(world);

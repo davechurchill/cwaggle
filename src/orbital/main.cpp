@@ -87,7 +87,7 @@ void OrbitalConstructionExample(int argc, char ** argv)
     // set up a new world that will be used for our simulation
     // let's pull one from the ExampleWorlds
     //auto world = ExampleWorlds::GetGridWorld720(2);
-    auto world = ExampleWorlds::GetGetSquareWorld(800, 800, 20, 10, 250, 10);
+    auto world = ExampleWorlds::GetGetSquareWorld(800, 800, 20, 10, 250, 10, 0, "image");
 
     // add orbital controllers to all the robots
     for (auto e : world->getEntities("robot"))

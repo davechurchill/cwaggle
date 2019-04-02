@@ -86,7 +86,7 @@ namespace ExampleWorlds
         return world;
     }
 
-    std::shared_ptr<World> GetGetSquareWorld(size_t width, size_t height, size_t numRobots, double robotSize, size_t numPucks, double puckSize)
+    std::shared_ptr<World> GetGetSquareWorld(size_t width, size_t height, size_t numRobots, double robotSize, size_t numPucks, double puckSize, size_t image, std::string imagePath)
     {
         auto world = std::make_shared<World>(width, height);
 
@@ -126,9 +126,15 @@ namespace ExampleWorlds
             puck.addComponent<CCircleShape>(puckSize);
             puck.addComponent<CColor>(200, 44, 44, 255);
         }
-        
-        world->setGrid(ExampleGrids::GetInverseCenterDistanceGrid(64, 64));
-        //world->setGrid(ValueGrid("triangle.png"));
+
+        if (image == 0)
+        {
+            world->setGrid(ExampleGrids::GetInverseCenterDistanceGrid(64, 64));
+        }
+        else
+        {
+            world->setGrid(ValueGrid(imagePath));
+        }
 
         world->update();
         return world;
