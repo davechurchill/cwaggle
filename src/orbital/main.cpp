@@ -1,8 +1,5 @@
 #include "CWaggle.h"
 
-#include "Eval.hpp"
-
-
 class EntityController_OrbitalConstruction : public EntityController
 {
     std::shared_ptr<World> m_world;
@@ -148,12 +145,6 @@ void OrbitalConstructionExample(int argc, char ** argv)
         // if a gui exists, call for its display to update
         // note: simulation is limited by gui frame rate limit
         gui.update();
-        double eval = Eval::PuckAvgThresholdDiff(simulator->getWorld(), 0.65, 0.8);
-        if (eval > 0.85)
-        {
-           // RESET 
-        }
-        // std::cout << eval;
     }
 }
 

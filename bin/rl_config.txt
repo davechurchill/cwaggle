@@ -26,3 +26,4 @@ qLearning      1
 savePolicy     100000 gnuplot/q_out.txt
 loadPolicy     0 gnuplot/q_out.txt
 importGrid     0 images/potential_field_L.png
+RLAction     0

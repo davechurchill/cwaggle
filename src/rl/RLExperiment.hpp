@@ -50,6 +50,7 @@ struct RLExperimentConfig
 
     std::string imagePath = "images/potential_field_L.png";
     size_t image = 0;
+    bool doRLAction = true;
 
     std::vector<double> actions = { };
 
@@ -94,6 +95,7 @@ struct RLExperimentConfig
             else if (token == "savePolicy")     { fin >> saveQSkip >> saveQFile; }
             else if (token == "loadPolicy")     { fin >> loadQ >> loadQFile; }
             else if (token == "importGrid")     { fin >> image >> imagePath; }
+            else if (token == "RLAction")       { fin >> doRLAction; }
             else if (token == "hashFunction")   
             { 
                 fin >> token;
@@ -238,17 +240,25 @@ public:
             // get the action that should be done for this entity
             EntityAction action;
 
-            // epsilon-greedy action selection
-            if ((rand() / (double)RAND_MAX) < m_config.epsilon)
+            //bool doRLAction = false;
+
+            if (m_config.doRLAction)
             {
-                action = getAction(rand() % 4);
+                // epsilon-greedy action selection
+                if ((rand() / (double)RAND_MAX) < m_config.epsilon)
+                {
+                    action = getAction(rand() % 4);
+                }
+                else
+                {
+                    action = getAction(m_QL.selectActionFromPolicy(m_config.hashFunction(reading)));
+                }
             }
             else
             {
-                action = getAction(m_QL.selectActionFromPolicy(m_config.hashFunction(reading)));
-                // action = EntityControllers::OrbitalConstruction(robot, m_sim->getWorld(), reading, m_config.occ);
+                action = EntityControllers::OrbitalConstruction(robot, m_sim->getWorld(), reading, m_config.occ);
             }
-
+            
             // record the action that the robot did into the batch
             m_actions.push_back(getActionIndex(action));
             m_robotsActed.push_back(robot);
