@@ -1,6 +1,6 @@
 width          800
 height         800
-numRobots      10
+numRobots      8
 robotRadius    10
 gui            1
 numPucks       250
@@ -13,18 +13,19 @@ outieThreshold 0.6
 innieThreshold 0.8
 hashFunction   Original
 actions        4 0.3 0.15 -0.15 -0.3
-maxTimeSteps   20000
+maxTimeSteps   10000000
 batchSize      1
 initialQ       1.0
 alpha          0.2
 gamma          0.9
-epsilon        0.01
+epsilon        0.00
 resetEval      0.94
 writePlotSkip  0
 plotFilename   gnuplot/1.txt
 qLearning      1
-savePolicy     100000 gnuplot/q_out.txt
-loadPolicy     0 gnuplot/q_out.txt
-importGrid     0 images/triangle.png
-resultsDir     results/
+savePolicy     100000 gnuplot/q_out7.txt
+loadPolicy     0 gnuplot/q_out_rl.txt
+resultsDir     results/RL/
+importGrid     0 images/potential_field_L.png
 RLAction       0
+0

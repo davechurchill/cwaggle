@@ -12,6 +12,8 @@
 #include "OrbitalController.hpp"
 #include "Hash.hpp"
 
+#include <stdlib.h>
+
 struct RLExperimentConfig
 {
     // Square World Parameters
@@ -47,6 +49,7 @@ struct RLExperimentConfig
     size_t loadQ = 0;
     std::string loadQFile;
     double resetEval    = 0;
+    std::string resultsDir = "gnuplot/";
 
     std::string imagePath = "images/potential_field_L.png";
     size_t image = 0;
@@ -95,6 +98,7 @@ struct RLExperimentConfig
             else if (token == "savePolicy")     { fin >> saveQSkip >> saveQFile; }
             else if (token == "loadPolicy")     { fin >> loadQ >> loadQFile; }
             else if (token == "importGrid")     { fin >> image >> imagePath; }
+            else if (token == "resultsDir")     { fin >> resultsDir; }
             else if (token == "RLAction")       { fin >> doRLAction; }
             else if (token == "hashFunction")   
             { 
@@ -149,7 +153,8 @@ class RLExperiment
             m_config.width, m_config.height,
             m_config.numRobots, m_config.robotRadius,
             m_config.numPucks, m_config.puckRadius,
-            m_config.image, m_config.imagePath
+            m_config.image, m_config.imagePath,
+            m_config.doRLAction
         );
 
         m_sim = std::make_shared<Simulator>(world);
@@ -315,17 +320,22 @@ public:
 
     void printResults()
     {
-        // prints out the number of formations completed
-        std::stringstream ss;
-        ss << "gnuplot/results_form_" << m_config.numRobots << "_" << m_config.maxTimeSteps << ".txt";
-        std::cout << "Printing Results to: " << ss.str() << "\n";
 
-        std::ofstream fout(ss.str());
-        fout << m_formations;
+        std::cout << "Results dir: " << m_config.resultsDir;
+
+        srand(time(0));
+
+        // prints out the number of formations completed
+        //std::stringstream ss;
+        //ss << m_config.resultsDir << "results_form_" << m_config.numRobots << "_" << m_config.maxTimeSteps << ".txt";
+        //std::cout << "Printing Results to: " << ss.str() << "\n";
+
+        //std::ofstream fout(ss.str());
+        //fout << m_formations;
 
         // prints out the number of  completed
         std::stringstream ss2;
-        ss2 << "gnuplot/results_form_over_time_" << m_config.numRobots << "_" << m_config.maxTimeSteps << ".txt";
+        ss2 << m_config.resultsDir << "results_form_over_time_" << m_config.numRobots << "_" << m_config.maxTimeSteps << "_" << rand()%1000 << ".txt";
         std::cout << "Printing Results to: " << ss2.str() << "\n";
 
 
@@ -385,10 +395,10 @@ public:
 
 namespace RLExperiments
 {
-    void MainRLExperiment()
+    void MainRLExperiment(const std::string & configFile)
     {
         RLExperimentConfig config;
-        config.load("rl_config.txt");
+        config.load(configFile);
 
         RLExperiment exp(config);
         exp.run();
