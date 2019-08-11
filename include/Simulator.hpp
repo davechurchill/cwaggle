@@ -160,6 +160,16 @@ class Simulator
                 // circles overlap if the overlap is positive
                 if (overlap > m_overlapThreshold)
                 {
+                    if (dist == 0)
+                    {
+                        // Circles are coincident.  If unchecked, this leads to
+                        // division by zero below.  Arbitrarily perturb body 1
+                        // by plus-or-minus 1 in x and y. 
+                        t1.p.x += 1 - (rand() % 3);
+                        t1.p.y += 1 - (rand() % 3);
+                        continue;
+                    }
+
                     // record that a collision took place between these two objects
                     m_collisions.push_back({ &t1, &t2, &b1, &b2 });
 
