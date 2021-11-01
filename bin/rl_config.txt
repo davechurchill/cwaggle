@@ -6,7 +6,7 @@ gui            1
 numPucks       250
 puckRadius     10
 simTimeStep    1
-renderSkip     1000
+renderSkip     100
 forwardSpeed   2.0
 angularSpeed   0.3
 outieThreshold 0.6

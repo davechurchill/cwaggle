@@ -1,61 +1,22 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClInclude Include="..\include\Components.hpp">
-      <Filter>cwaggle</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\Entity.hpp">
-      <Filter>cwaggle</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\EntityAction.hpp">
-      <Filter>cwaggle</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\EntityControllers.hpp">
-      <Filter>cwaggle</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\EntityManager.hpp">
-      <Filter>cwaggle</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\EntityMemoryPool.hpp">
-      <Filter>cwaggle</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\ExampleGrids.hpp">
-      <Filter>cwaggle</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\ExampleWorlds.hpp">
-      <Filter>cwaggle</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\GUI.hpp">
-      <Filter>cwaggle</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\Sensors.hpp">
-      <Filter>cwaggle</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\SensorTools.hpp">
-      <Filter>cwaggle</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\Simulator.hpp">
-      <Filter>cwaggle</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\Timer.hpp">
-      <Filter>cwaggle</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\ValueGrid.hpp">
-      <Filter>cwaggle</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\Vec2.hpp">
-      <Filter>cwaggle</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\World.hpp">
-      <Filter>cwaggle</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\CWaggle.h">
-      <Filter>cwaggle</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <Filter Include="cwaggle">
-      <UniqueIdentifier>{818f3d26-bf08-4fcd-beed-76e0fff86024}</UniqueIdentifier>
-    </Filter>
+    <ClInclude Include="..\include\Components.hpp" />
+    <ClInclude Include="..\include\CWaggle.h" />
+    <ClInclude Include="..\include\Entity.hpp" />
+    <ClInclude Include="..\include\EntityAction.hpp" />
+    <ClInclude Include="..\include\EntityControllers.hpp" />
+    <ClInclude Include="..\include\EntityManager.hpp" />
+    <ClInclude Include="..\include\EntityMemoryPool.hpp" />
+    <ClInclude Include="..\include\ExampleGrids.hpp" />
+    <ClInclude Include="..\include\ExampleWorlds.hpp" />
+    <ClInclude Include="..\include\GUI.hpp" />
+    <ClInclude Include="..\include\Sensors.hpp" />
+    <ClInclude Include="..\include\SensorTools.hpp" />
+    <ClInclude Include="..\include\Simulator.hpp" />
+    <ClInclude Include="..\include\Timer.hpp" />
+    <ClInclude Include="..\include\ValueGrid.hpp" />
+    <ClInclude Include="..\include\Vec2.hpp" />
+    <ClInclude Include="..\include\World.hpp" />
   </ItemGroup>
 </Project>
